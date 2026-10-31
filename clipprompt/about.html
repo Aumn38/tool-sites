@@ -1,22 +1,62 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>关于本站 | ClipPrompt</title>
-<meta name="google-site-verification" content="fWZOyCIfCth5cZqTbJjaUXBtl6xDfTnVt5WJs4gEsv8">
-<meta name="google-site-verification" content="aDz0jgqdQV47QH0HWDAhzbFqA-Ke8r-rBr8Ea0gWWE8">
-<style>body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:760px;margin:0 auto;padding:24px 16px;line-height:1.7;color:#221a14;background:#faf5f0}a{color:#ea580c}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClipPrompt — About</title>
+<meta name="description" content="About ClipPrompt: who operates it, what the tool does, its current status, pricing, and how to contact the operator.">
+<link rel="canonical" href="https://clipprompt.kill-bill.de5.net/about">
+<style>
+:root{--bg:#0d1017;--panel:#161b25;--line:#2b3446;--txt:#e9edf5;--dim:#9aa7ba;--acc:#7dd87d;--acc2:#6cb8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+a{color:var(--acc2)}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+header{padding:44px 0 8px}
+header h1{font-size:1.8rem;line-height:1.25}
+header h1 span{color:var(--acc)}
+header p{color:var(--dim);margin-top:10px}
+section{margin:32px 0}
+section h2{font-size:1.25rem;margin-bottom:10px}
+section h2 span{color:var(--acc)}
+section p,section li{color:#c7d0de}
+section ul{padding-left:22px;margin:8px 0}
+section li{margin-bottom:6px}
+footer{border-top:1px solid var(--line);padding:22px 0 44px;color:var(--dim);font-size:.85rem;text-align:center}
+footer a{color:var(--dim)}
+</style>
 </head>
 <body>
-<h1>关于本站</h1>
-<p>ClipPrompt 是一个本地视频提示词工作台：你用中文描述想要的视频，页面在浏览器里用本地词典与模板拼出英文视频提示词与多镜头脚本。</p>
-<ul>
-<li><strong>独立运行：</strong>不需要账号、注册、API Key、数据库或后端；核心功能不付费，打赏自愿、不锁功能；断网后已经打开的页面核心功能仍可使用（首次打开页面本身需要网络加载）。</li>
-<li><strong>不是模型：</strong>本站不调用任何 AI 模型，不生成视频，不做推理；输出只是文字组合，效果取决于你粘贴到的视频工具。</li>
-<li><strong>姊妹站：</strong>Ideogram 4.5 Prompt Builder（图片提示词与画面文字）与 FLUX 3 Klein Prompt Builder（图片生成与编辑指令），三站共用同一套“中文界面、英文输出、本地运行”的做法，但各自的模块与模板不同。</li>
-</ul>
-<p><a href="index.html">返回 ClipPrompt 首页</a> · <a href="privacy.html">隐私说明</a> · <a href="terms.html">使用条款</a> · <a href="acceptable-use.html">合理使用</a></p>
-<p>姊妹站：<a href="https://ideogram45.qqbridge.workers.dev/">Ideogram 4.5 Prompt Builder</a> · <a href="https://flux3klein.qqbridge.workers.dev/">FLUX 3 Klein Prompt Builder</a> · <a href="https://clipprompt.kill-bill.de5.net/">ClipPrompt</a></p>
+<div class="wrap">
+<header>
+<h1>About <span>ClipPrompt</span></h1>
+<p>ClipPrompt turns a short video into a structured video-generation prompt with a shot table, in Wan 3.0 format.</p>
+</header>
+
+<section>
+<h2>What <span>it does</span></h2>
+<p>Give ClipPrompt a clip and it breaks it down into subject, shots, camera and sound, then composes a copyable prompt that could have made a similar video. Analysis is done by Qwen3-VL. Wan 3.0 is the video model format the tool supports; ClipPrompt is an independent tool and is not affiliated with the Wan model provider.</p>
+</section>
+
+<section>
+<h2>Current <span>status</span></h2>
+<p>The live reverse tool is being wired up. The current page is a preview build: it shows the full output format with a worked example ("Night Market Noodles", 12 seconds, 4-shot table) and runs entirely in your browser — no video leaves your device and no account is needed. The preview will be replaced by live analysis once wiring is complete.</p>
+</section>
+
+<section>
+<h2><span>Pricing</span></h2>
+<p>Your first reverse is free. After that, 10 reverses cost $5 one-time, taxes included. Payments are handled by Creem, our merchant of record, and reverse credits are tied to the email address you pay with.</p>
+</section>
+
+<section>
+<h2>Who <span>operates it</span></h2>
+<p>ClipPrompt is operated by ShuoHang Wu (吴铄航). Contact: <a href="mailto:peter.12312367@gmail.com">peter.12312367@gmail.com</a>.</p>
+</section>
+
+<footer>
+<p><a href="/">ClipPrompt home</a> · <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a> · <a href="/acceptable-use">Acceptable Use Policy</a></p>
+<p>Operated by ShuoHang Wu (吴铄航). Contact: <a href="mailto:peter.12312367@gmail.com">peter.12312367@gmail.com</a></p>
+</footer>
+</div>
 </body>
 </html>

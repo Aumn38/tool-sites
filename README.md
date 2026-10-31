@@ -7,7 +7,7 @@ on Cloudflare Workers; the pages here are the site content itself.
 | --- | --- | --- |
 | `ideogram45/` | Ideogram 4.5 Prompt Builder | https://ideogram45.qqbridge.workers.dev/ |
 | `flux3klein/` | FLUX 3 Klein Prompt Builder | https://flux3klein.qqbridge.workers.dev/ |
-| `clipprompt/` | ClipPrompt (Wan 3.0 reverse-prompt tool) | https://clipprompt.kill-bill.de5.net/ |
+| `clipprompt/` | ClipPrompt (local video prompt builder) | https://clipprompt.kill-bill.de5.net/ |
 
 Notes:
 
