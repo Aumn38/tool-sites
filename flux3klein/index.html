@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="fWZOyCIfCth5cZqTbJjaUXBtl6xDfTnVt5WJs4gEsv8">
+<title>FLUX 3 Klein Prompt Builder — Upsampler Captions, Bounding Box JSON & Edit Prompts</title>
+<meta name="description" content="Free prompt builder for FLUX 3 Image Klein. Turn short ideas into full upsampler-style captions, draw bounding boxes and export official boxes.json, and write final-frame edit prompts for up to 10 reference images. No sign-up, runs in your browser.">
+<link rel="canonical" href="https://flux3klein.qqbridge.workers.dev/">
+<meta property="og:title" content="FLUX 3 Klein Prompt Builder">
+<meta property="og:description" content="Upsampler-style captions, visual bounding-box JSON and edit prompts for Black Forest Labs' FLUX 3 Image Klein. Free, no sign-up.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://flux3klein.qqbridge.workers.dev/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"What is FLUX 3 Image Klein?","acceptedAnswer":{"@type":"Answer","text":"FLUX 3 Image Klein is Black Forest Labs' 5.6B-parameter open-weights image model, released on October 15, 2026. One model does text-to-image, editing with up to 10 reference images, and layout control with bounding boxes, at resolutions up to 4K. It ships in a fast distilled version (16 steps, no guidance) and a Base version (50 steps, CFG) for fine-tuning and LoRA training."}},
+{"@type":"Question","name":"Why do my FLUX 3 Klein prompts look generic?","acceptedAnswer":{"@type":"Answer","text":"Klein is trained on long, detailed captions written by its prompt upsampler, a 9B vision-language model. Black Forest Labs states the model should not be used without the upsampler: a short prompt sent as typed gives noticeably weaker, more generic results. Either let the official CLI run the upsampler, or write a full upsampler-style caption yourself — which is what this builder assembles — and pass it with --no-pup."}},
+{"@type":"Question","name":"What is the FLUX 3 Klein bounding box format?","acceptedAnswer":{"@type":"Answer","text":"A boxes.json file is a list of objects with an id, a desc, and a bbox of [y_min, x_min, y_max, x_max] in 0 to 1 coordinates with a top-left origin, for example {\"id\": \"obj_1\", \"desc\": \"a red hot-air balloon\", \"bbox\": [0.08, 0.10, 0.45, 0.42]}. For edits, a box can also carry a from field (a reference image or target) plus src_bbox and tgt_bbox."}},
+{"@type":"Question","name":"Should I use Klein distilled or Klein Base?","acceptedAnswer":{"@type":"Answer","text":"Use the distilled checkpoint for generation and editing: it runs in 16 steps with no guidance and is about 6x faster. Use Klein Base (50 steps, CFG 4) when you fine-tune, train LoRAs, or do research and need steps, guidance and negative prompts."}},
+{"@type":"Question","name":"Can FLUX 3 Klein edit images?","acceptedAnswer":{"@type":"Answer","text":"Yes. Klein edits with up to 10 reference images; the first reference sets the output size. The prompt rule that matters is to describe the final frame — what the finished image should look like — rather than only naming the change, and to state explicitly what must stay unchanged."}},
+{"@type":"Question","name":"Is FLUX 3 Image Klein free to use commercially?","acceptedAnswer":{"@type":"Answer","text":"The weights are released under the FLUX Kommunity License: free commercial use for individuals and companies with under $5M annual revenue, plus research and non-commercial use. Larger companies need a separate commercial license or can use the BFL API, where Klein starts at about $0.009 per 1K image."}},
+{"@type":"Question","name":"Does this prompt builder generate images?","acceptedAnswer":{"@type":"Answer","text":"No. This is a free prompt-building tool: it assembles upsampler-style captions, bounding-box JSON and ready-to-run CLI commands in your browser. You run the actual model yourself via the official CLI, ComfyUI, Diffusers, or the BFL API."}}
+]}
+</script>
+<style>
+:root{--bg:#0d1017;--panel:#161b25;--panel2:#1f2634;--line:#2b3446;--txt:#e9edf5;--dim:#9aa7ba;--acc:#7dd87d;--acc2:#6cb8f0;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+a{color:var(--acc2)}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+header{padding:44px 0 8px;text-align:center}
+header h1{font-size:2rem;line-height:1.2}
+header h1 span{color:var(--acc)}
+header p{color:var(--dim);max-width:680px;margin:12px auto 0}
+.badges{margin:16px 0 4px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.badge{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;padding:3px 12px;font-size:.8rem}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:26px 0}
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{flex:1;min-width:150px;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font-size:.98rem;cursor:pointer}
+.tab.active{background:var(--acc);color:#0d1a0d;border-color:var(--acc);font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:.83rem;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:.02em}
+.field input[type=text],.field select,.field textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px 11px;font-size:.95rem;font-family:inherit}
+.field textarea{min-height:60px;resize:vertical}
+.field.full{grid-column:1/-1}
+.mini-btn{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.mini-btn:hover{color:var(--txt);border-color:var(--acc2)}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 16px}
+.presets span{color:var(--dim);font-size:.87rem;align-self:center}
+.outbox{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px}
+.outhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.outhead h3{font-size:1rem}
+.output{width:100%;background:#090c10;border:1px solid var(--line);border-radius:10px;color:#d9f2d9;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;min-height:110px;white-space:pre-wrap;word-break:break-word;margin-top:12px}
+.copyrow{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.copyBtn{background:var(--acc);color:#0d1a0d;border:none;border-radius:10px;padding:11px 22px;font-size:.95rem;font-weight:700;cursor:pointer}
+.copyBtn:hover{filter:brightness(1.08)}
+.copyBtn.alt{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+.chars{color:var(--dim);font-size:.83rem}
+.tip{background:#12241a;border:1px solid #245236;border-radius:10px;padding:11px 14px;color:#c4ecd2;font-size:.88rem;margin-top:14px}
+.stageWrap{margin:6px 0 4px}
+#stage{position:relative;width:100%;background:#090c10;border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none;user-select:none}
+#stage .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#44506a;font-size:.9rem;pointer-events:none;text-align:center;padding:10px}
+.bbox{position:absolute;border:2px solid var(--acc);background:rgba(125,216,125,.13);border-radius:4px;cursor:move}
+.bbox.sel{border-color:var(--acc2);background:rgba(108,184,240,.15)}
+.bbox .tag{position:absolute;top:-1px;left:-1px;background:var(--acc);color:#0d1a0d;font-size:.68rem;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap;max-width:100%;overflow:hidden}
+.bbox.sel .tag{background:var(--acc2);color:#0a1420}
+.bbox .handle{position:absolute;right:-7px;bottom:-7px;width:14px;height:14px;background:#fff;border:2px solid #333;border-radius:50%;cursor:nwse-resize}
+.boxlist{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.boxrow{display:flex;gap:8px;align-items:center}
+.boxrow .bid{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;color:var(--acc2);width:52px;flex:none}
+.boxrow input[type=text]{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:.9rem}
+.boxrow .del{flex:none}
+section.content{margin:38px 0}
+section.content h2{font-size:1.35rem;margin-bottom:12px}
+section.content h2 span{color:var(--acc)}
+section.content p,section.content li{color:#c7d0de}
+section.content ul{padding-left:20px}
+section.content li{margin:5px 0}
+section.content table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.92rem}
+section.content th,section.content td{border:1px solid var(--line);padding:8px 10px;text-align:left;color:#c7d0de}
+section.content th{color:var(--txt);background:var(--panel)}
+.example{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin:12px 0}
+.example h3{font-size:1rem;margin-bottom:6px;color:var(--acc2)}
+.example p{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;color:#d9f2d9;white-space:pre-wrap}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:.88em}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin:9px 0}
+details summary{cursor:pointer;font-weight:600}
+details p{margin-top:8px;color:#c7d0de}
+footer{border-top:1px solid var(--line);margin-top:44px;padding:22px 0 34px;color:var(--dim);font-size:.85rem;text-align:center}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>FLUX 3 Klein <span>Prompt Builder</span></h1>
+<p>Black Forest Labs says FLUX 3 Image Klein should never run without its prompt upsampler — short prompts come out generic. This free builder writes the full upsampler-style caption for you, lets you draw bounding boxes and export official <b>boxes.json</b>, and drafts final-frame edit prompts. No sign-up, everything runs in your browser.</p>
+<div class="badges"><span class="badge">For FLUX 3 Image Klein (Oct 15, 2026)</span><span class="badge">Captions · Layout boxes · Edits</span><span class="badge">CLI command generator</span></div>
+</header>
+
+<div class="tool">
+<div class="tabs">
+<button class="tab active" id="tabCaption" onclick="switchMode('caption')">📝 Caption builder</button>
+<button class="tab" id="tabLayout" onclick="switchMode('layout')">🔲 Layout boxes</button>
+<button class="tab" id="tabEdit" onclick="switchMode('edit')">✂️ Edit prompt</button>
+</div>
+
+<!-- CAPTION MODE -->
+<div id="modeCaption">
+<div class="presets"><span>Try a preset:</span>
+<button class="mini-btn" onclick="presetCaption('dog')">🐕 Man walking his dog</button>
+<button class="mini-btn" onclick="presetCaption('portrait')">🎞️ Double-exposure portrait</button>
+<button class="mini-btn" onclick="presetCaption('studio')">🏺 Ceramicist's studio</button>
+</div>
+<div class="grid">
+<div class="field"><label>Medium / image type</label>
+<select id="c_medium">
+<option>Full-color photograph</option><option>Black-and-white photograph</option><option>Digital illustration</option><option>3D render</option><option>Oil painting</option><option>Watercolor illustration</option><option>Movie still</option><option>Studio product photo</option><option>Poster artwork</option>
+</select></div>
+<div class="field"><label>Shot / composition</label>
+<select id="c_shot">
+<option>eye-level medium-wide shot</option><option>close-up portrait</option><option>head-and-shoulders composition</option><option>wide establishing shot</option><option>overhead flat-lay</option><option>low-angle shot</option><option>macro shot</option><option>full-body shot</option>
+</select></div>
+<div class="field full"><label>Main subject</label>
+<input type="text" id="c_subject" placeholder="e.g. a red fox curled up asleep inside an open vintage leather suitcase"></div>
+<div class="field full"><label>Subject details (appearance, clothing, materials)</label>
+<textarea id="c_details" placeholder="e.g. thick orange fur with a white chest, brass suitcase clasps, worn brown leather with scratches"></textarea></div>
+<div class="field"><label>Action / pose</label>
+<input type="text" id="c_action" placeholder="e.g. sleeping with its tail over its nose"></div>
+<div class="field"><label>Setting / background</label>
+<input type="text" id="c_setting" placeholder="e.g. the luggage rack of an old wooden train compartment"></div>
+<div class="field"><label>Lighting</label>
+<input type="text" id="c_lighting" placeholder="e.g. soft window light falling from the left, warm highlights"></div>
+<div class="field"><label>Color palette / mood</label>
+<input type="text" id="c_palette" placeholder="e.g. muted warm browns, quiet and nostalgic"></div>
+<div class="field"><label>Style details (film, lens, texture)</label>
+<input type="text" id="c_style" placeholder="e.g. photorealistic, shallow depth of field, fine film grain"></div>
+<div class="field"><label>Exact text in the image (optional)</label>
+<input type="text" id="c_text" placeholder="e.g. a small tag that reads &quot;PARIS&quot;"></div>
+</div>
+<div class="outbox">
+<div class="outhead"><h3>Upsampler-style caption</h3><span class="chars" id="capChars"></span></div>
+<div class="output" id="capOut"></div>
+<div class="copyrow">
+<button class="copyBtn" onclick="copyText('capOut',this)">Copy caption</button>
+<button class="copyBtn alt" onclick="copyText('capCli',this)">Copy CLI command</button>
+</div>
+<div class="output" id="capCli" style="min-height:64px"></div>
+<div class="tip">How to use it: paste the caption into the official CLI with <code>--no-pup</code> (your caption already does the upsampler's job), into ComfyUI's prompt box, or into any Klein playground. Settings below the builder choose the checkpoint, size and seed for the generated CLI command.</div>
+</div>
+</div>
+
+<!-- LAYOUT MODE -->
+<div id="modeLayout" class="hidden">
+<div class="presets"><span>Try a preset:</span>
+<button class="mini-btn" onclick="presetLayout()">🎈 Balloons &amp; lighthouse (official example)</button>
+<button class="mini-btn" onclick="clearBoxes()">Clear boxes</button>
+</div>
+<div class="grid">
+<div class="field"><label>Canvas aspect ratio</label>
+<select id="l_ratio" onchange="setRatio()">
+<option value="1">1 : 1</option><option value="1.333">4 : 3</option><option value="0.75">3 : 4</option><option value="1.778">16 : 9</option><option value="0.5625">9 : 16</option>
+</select></div>
+<div class="field"><label>Overall scene (one line)</label>
+<input type="text" id="l_scene" placeholder="e.g. hot-air balloons over a green valley at sunrise" oninput="buildLayout()"></div>
+</div>
+<div class="stageWrap"><div id="stage"><div class="hint" id="stageHint">Click “Add a box”, then drag it into place.<br>Drag the white handle to resize.</div></div></div>
+<div class="copyrow"><button class="mini-btn" onclick="addBox()">＋ Add a box</button><span class="chars">Coordinates are exported in the official 0–1 format, [y_min, x_min, y_max, x_max].</span></div>
+<div class="boxlist" id="boxList"></div>
+<div class="outbox">
+<div class="outhead"><h3>boxes.json + layout caption</h3></div>
+<div class="output" id="layOut"></div>
+<div class="copyrow">
+<button class="copyBtn" onclick="copyText('layJson',this)">Copy boxes.json</button>
+<button class="copyBtn alt" onclick="copyText('layOut',this)">Copy layout caption</button>
+</div>
+<div class="output" id="layJson" style="min-height:64px"></div>
+<div class="tip">Run it with: <code>python scripts/cli.py "your scene caption" --boxes boxes.json --model distilled --out out.png</code> — save the JSON above as <code>boxes.json</code> next to your prompt.</div>
+</div>
+</div>
+
+<!-- EDIT MODE -->
+<div id="modeEdit" class="hidden">
+<div class="presets"><span>Try a preset:</span>
+<button class="mini-btn" onclick="presetEdit('bandana')">🐶 Red bandana (official example)</button>
+<button class="mini-btn" onclick="presetEdit('mug')">☕ Print the dog on a mug</button>
+</div>
+<div class="grid">
+<div class="field"><label>Reference images</label>
+<select id="e_refs">
+<option value="1">1 reference image</option><option value="2">2 reference images</option><option value="3">3 reference images</option><option value="4">4 reference images</option><option value="5">5 reference images</option><option value="10">10 reference images (max)</option>
+</select></div>
+<div class="field"><label>Which checkpoint?</label>
+<select id="e_model"><option value="distilled">Klein distilled (16 steps, fast)</option><option value="base">Klein Base (50 steps, CFG 4)</option></select></div>
+<div class="field full"><label>Describe the FINAL frame (not just the change)</label>
+<textarea id="e_final" placeholder="e.g. A happy brown dog sitting on a porch, now wearing a red bandana around its neck, same pose and background as the reference"></textarea></div>
+<div class="field full"><label>What changes</label>
+<textarea id="e_change" placeholder="e.g. add a red bandana around the dog's neck"></textarea></div>
+<div class="field full"><label>What must stay unchanged</label>
+<textarea id="e_keep" placeholder="e.g. the dog's face, fur pattern, pose, the porch and the daylight"></textarea></div>
+</div>
+<div class="outbox">
+<div class="outhead"><h3>Edit prompt</h3><span class="chars" id="editChars"></span></div>
+<div class="output" id="editOut"></div>
+<div class="copyrow"><button class="copyBtn" onclick="copyText('editOut',this)">Copy edit prompt</button></div>
+<div class="tip">Klein's prompt rule: describe the finished image. “Swap the earring” degrades badly; “the woman from the first image, now wearing a silver hoop earring, same pose, same lighting” works. The first reference image sets the output size.</div>
+</div>
+</div>
+
+<!-- shared run settings -->
+<div class="outbox">
+<div class="outhead"><h3>Run settings (for the CLI command)</h3></div>
+<div class="grid" style="margin-top:12px">
+<div class="field"><label>Checkpoint</label>
+<select id="s_model"><option value="distilled">Klein distilled — 16 steps, no guidance</option><option value="base">Klein Base — 50 steps, CFG 4</option></select></div>
+<div class="field"><label>Size</label>
+<select id="s_size"><option value="1024x1024">1024 × 1024 (1:1)</option><option value="1216x832">1216 × 832 (3:2)</option><option value="832x1216">832 × 1216 (2:3)</option><option value="1344x768">1344 × 768 (16:9)</option><option value="768x1344">768 × 1344 (9:16)</option><option value="2048x2048">2048 × 2048 (2K)</option></select></div>
+<div class="field"><label>Seed</label><input type="text" id="s_seed" value="7"></div>
+<div class="field"><label>Output file</label><input type="text" id="s_out" value="out.png"></div>
+</div>
+</div>
+</div>
+
+<section class="content">
+<h2>Why Klein <span>needs</span> full captions</h2>
+<p>FLUX 3 Image Klein is Black Forest Labs' 5.6B open-weights image model (released October 15, 2026): text-to-image, editing with up to 10 reference images, and bounding-box layout control in a single model, up to 4K. It was trained on the long captions produced by its own <b>prompt upsampler</b> — a 9B vision-language model fine-tuned from Qwen3.5-9B. In the official repository, BFL is blunt about it: do not use the model without the upsampler, because a prompt sent as typed gives noticeably weaker results.</p>
+<p style="margin-top:10px">That leaves two ways to get good prompts. Run the official pipeline and let the 9B upsampler rewrite your idea (it needs GPU room next to the model), or write the upsampled caption yourself and pass it with <code>--no-pup</code>. This builder takes the second route: it assembles the same kind of caption the upsampler writes — medium, shot, subject detail, setting, light, palette — from a short form, in your browser, with no GPU and no account.</p>
+<ul style="margin-top:10px">
+<li><b>Caption builder</b> — short form in, 100+ word upsampler-style caption + ready CLI command out.</li>
+<li><b>Layout boxes</b> — draw boxes on a canvas, export the official <code>boxes.json</code> format.</li>
+<li><b>Edit prompt</b> — structured final-frame descriptions for edits with up to 10 references.</li>
+</ul>
+</section>
+
+<section class="content">
+<h2>Distilled vs <span>Base</span></h2>
+<table>
+<tr><th></th><th>FLUX 3 Image Klein (distilled)</th><th>FLUX 3 Image Klein Base</th></tr>
+<tr><td>Steps / guidance</td><td>16 steps, no guidance</td><td>50 steps, CFG 4</td></tr>
+<tr><td>Speed</td><td>~6× faster, the API checkpoint</td><td>Slower, reference quality</td></tr>
+<tr><td>Best for</td><td>Generation &amp; editing, self-hosting</td><td>Fine-tuning, LoRA training, research</td></tr>
+<tr><td>Extras</td><td>Fixed settings, nothing to tune</td><td>Negative prompts, full control</td></tr>
+</table>
+<p>Both share the same weights family, text encoder and bounding-box support. Quantized FP8 / NVFP4 builds ship with the release, and the ComfyUI int8 files run on 8 GB GPUs such as an RTX 3070.</p>
+</section>
+
+<section class="content">
+<h2>The bounding box <span>format</span></h2>
+<p>Layout control uses a <code>boxes.json</code> file: a list of boxes in <b>[y_min, x_min, y_max, x_max]</b> order, coordinates from 0 to 1, origin at the top-left. Each box has an <code>id</code> the caption can reference and a <code>desc</code> of what goes inside. This is the official example from the BFL repository:</p>
+<div class="example"><h3>boxes.json — official example</h3><p>[{"id": "obj_1", "desc": "a red hot-air balloon", "bbox": [0.08, 0.10, 0.45, 0.42]},
+ {"id": "obj_2", "desc": "a lighthouse on a cliff", "bbox": [0.30, 0.60, 0.95, 0.90]}]</p></div>
+<p>Boxes guide placement and scale rather than acting as hard pixel masks — an element can spill slightly past its box. For edits, a box can also carry <code>"from": "ref_image_0"</code> (or <code>"target"</code>) with <code>src_bbox</code> and <code>tgt_bbox</code> to move an element from a reference into a new position. The Layout tab above exports exactly this format.</p>
+</section>
+
+<section class="content">
+<h2>Run Klein <span>yourself</span></h2>
+<ul>
+<li><b>Official CLI</b> — <a href="https://github.com/black-forest-labs/flux-3-image-klein" rel="nofollow">github.com/black-forest-labs/flux-3-image-klein</a>: reference inference code, demo with Layout / Text-to-image / Edit tabs.</li>
+<li><b>Weights</b> — Hugging Face: <code>black-forest-labs/flux-3-image-klein</code> (distilled), <code>...-base</code>, and the <code>flux-3-image-klein-pup</code> upsampler (Apache 2.0).</li>
+<li><b>ComfyUI</b> — official Comfy files include int8 builds that run on 8 GB GPUs.</li>
+<li><b>BFL API</b> — the distilled checkpoint from about $0.009 per 1K image; same request fields as FLUX 3 Image.</li>
+<li><b>License</b> — FLUX Kommunity License: free commercial use under $5M annual revenue; larger companies need a separate license.</li>
+</ul>
+</section>
+
+<section class="content">
+<h2>Frequently asked <span>questions</span></h2>
+<details><summary>What is FLUX 3 Image Klein?</summary><p>Black Forest Labs' 5.6B-parameter open-weights image model, released October 15, 2026. One model does text-to-image, editing with up to 10 reference images, and layout control with bounding boxes, at resolutions up to 4K.</p></details>
+<details><summary>Why do my Klein prompts look generic?</summary><p>Klein is trained on long captions written by its prompt upsampler. A short prompt sent as typed gives noticeably weaker results — BFL says not to use the model without the upsampler. Either let the official CLI upsample, or write a full caption yourself (this builder assembles one) and pass it with --no-pup.</p></details>
+<details><summary>What is the bounding box format?</summary><p>A boxes.json list of {"id", "desc", "bbox": [y_min, x_min, y_max, x_max]} with 0–1 coordinates and a top-left origin. Edit boxes can add "from", "src_bbox" and "tgt_bbox". The Layout tab exports this format directly.</p></details>
+<details><summary>Distilled or Base — which should I use?</summary><p>Distilled for generation and editing (16 steps, no guidance, ~6× faster). Base (50 steps, CFG 4) for fine-tuning, LoRA training and research.</p></details>
+<details><summary>Can Klein edit images?</summary><p>Yes — up to 10 reference images, and the first reference sets the output size. Describe the final frame rather than only the change, and state what must stay unchanged.</p></details>
+<details><summary>Does this tool generate images?</summary><p>No. It builds captions, boxes.json and CLI commands in your browser. You run the model yourself via the official CLI, ComfyUI, Diffusers or the BFL API.</p></details>
+</section>
+
+<footer>
+<p>FLUX 3 Klein Prompt Builder — an independent, unofficial tool. Not affiliated with or endorsed by Black Forest Labs. FLUX is a trademark of Black Forest Labs. Everything on this page runs locally in your browser; no prompts are uploaded or stored.</p>
+<p style="margin-top:10px">More free prompt builders: <a href="https://ideogram45.qqbridge.workers.dev/">Ideogram 4.5 Prompt Builder</a> — precise prompts with exact text, colors and layout for posters, menus &amp; packaging. · <a href="https://clipprompt.kill-bill.de5.net/">ClipPrompt</a> — reverse a video into a prompt in Wan 3.0 format.</p>
+</footer>
+</div>
+
+<script>
+let mode='caption';
+function switchMode(m){
+  mode=m;
+  ['caption','layout','edit'].forEach(k=>{
+    document.getElementById('mode'+k[0].toUpperCase()+k.slice(1)).classList.toggle('hidden',k!==m);
+    document.getElementById('tab'+k[0].toUpperCase()+k.slice(1)).classList.toggle('active',k===m);
+  });
+  buildAll();
+}
+function val(id){return document.getElementById(id).value.trim();}
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+function buildCaption(){
+  const medium=val('c_medium'),shot=val('c_shot'),subj=val('c_subject'),det=val('c_details'),
+        act=val('c_action'),set=val('c_setting'),light=val('c_lighting'),pal=val('c_palette'),
+        sty=val('c_style'),txt=val('c_text');
+  let parts=[];
+  parts.push(medium+', framed as a '+shot+'.');
+  if(subj){let s=cap(subj);if(det)s+=' — '+det;if(act)s+=', '+act;parts.push(s+'.');}
+  if(set)parts.push('The setting is '+set+'.');
+  if(light)parts.push(cap(light)+'.');
+  if(pal)parts.push('The palette and mood: '+pal+'.');
+  if(sty)parts.push(cap(sty)+'.');
+  if(txt)parts.push('In-image text: '+txt);
+  const caption=parts.join(' ');
+  document.getElementById('capOut').textContent=caption||'Fill in the subject to assemble your caption…';
+  document.getElementById('capChars').textContent=caption?caption.split(/\s+/).filter(Boolean).length+' words · '+caption.length+' chars':'';
+  buildCli(caption);
+}
+function cliCmd(prompt){
+  const model=val('s_model'),size=val('s_size'),seed=val('s_seed')||'7',out=val('s_out')||'out.png';
+  const q='"'+(prompt||'your caption here').replace(/"/g,'\\"')+'"';
+  return 'python scripts/cli.py '+q+' --model '+model+' --width '+size.split('x')[0]+' --height '+size.split('x')[1]+' --seed '+seed+' --no-pup --out '+out;
+}
+function buildCli(caption){document.getElementById('capCli').textContent=cliCmd(caption);}
+function presetCaption(k){
+  const P={
+   dog:{medium:'Full-color photograph',shot:'eye-level medium-wide shot',subject:'a man walking with his dog along a neighborhood sidewalk',details:'a man in his thirties with short brown hair and light stubble, wearing a faded olive overshirt over a plain grey T-shirt, dark blue jeans and worn brown leather shoes; a medium-sized dog on a loose leash beside him',action:'walking toward frame-left at an easy pace',setting:'a quiet residential street with low fences and parked cars softly out of focus',lighting:'late afternoon sunlight from the upper right, casting long shadows across the pavement and warm side light on their faces',palette:'warm, calm, everyday realism',style:'photorealistic, shallow depth of field, natural skin texture',text:''},
+   portrait:{medium:'Digital photograph',shot:'head-and-shoulders composition',subject:'a double-exposure portrait of a young East Asian man',details:'the man faces the camera directly in the foreground; a larger translucent profile of the same man, facing left, is layered over him; a polished silver hoop earring hangs from his left ear',action:'looking calmly into the lens',setting:'a seamless dark studio background',lighting:'soft directional light sculpting the face, gentle falloff into shadow',palette:'muted blue monochrome palette, quiet and contemplative',style:'visible 35mm film grain, fine detail in the skin and hair',text:''},
+   studio:{medium:'Full-color photograph',shot:'eye-level medium-wide shot',subject:'a ceramicist\u2019s studio workbench covered with glazed bowls',details:'shelves of glazed bowls in earthy tones behind the bench, a potter\u2019s wheel to the left, tools and clay-dusted cloths on the wood surface',action:'',setting:'a small artisan studio with a large window',lighting:'golden-hour light streaming through the window, warm highlights on the glaze',palette:'warm ambers and clay browns, cozy and artisanal',style:'photorealistic, shallow depth of field',text:''}
+  }[k];
+  if(!P)return;
+  document.getElementById('c_medium').value=P.medium;document.getElementById('c_shot').value=P.shot;
+  document.getElementById('c_subject').value=P.subject;document.getElementById('c_details').value=P.details;
+  document.getElementById('c_action').value=P.action;document.getElementById('c_setting').value=P.setting;
+  document.getElementById('c_lighting').value=P.lighting;document.getElementById('c_palette').value=P.palette;
+  document.getElementById('c_style').value=P.style;document.getElementById('c_text').value=P.text;
+  buildCaption();
+}
+/* ---- layout boxes ---- */
+let boxes=[],selBox=-1,boxSeq=0;
+const stage=document.getElementById('stage');
+function setRatio(){const r=parseFloat(val('l_ratio'));stage.style.aspectRatio=r+' / 1';renderBoxes();}
+function addBox(desc){
+  boxSeq++;
+  boxes.push({id:'obj_'+boxSeq,desc:desc||'',x:0.08+0.05*boxes.length,y:0.08+0.05*boxes.length,w:0.34,h:0.34});
+  selBox=boxes.length-1;renderBoxes();buildLayout();
+}
+function clearBoxes(){boxes=[];selBox=-1;boxSeq=0;renderBoxes();buildLayout();}
+function renderBoxes(){
+  stage.querySelectorAll('.bbox').forEach(e=>e.remove());
+  document.getElementById('stageHint').style.display=boxes.length?'none':'flex';
+  boxes.forEach((b,i)=>{
+    const d=document.createElement('div');d.className='bbox'+(i===selBox?' sel':'');
+    d.style.left=(b.x*100)+'%';d.style.top=(b.y*100)+'%';d.style.width=(b.w*100)+'%';d.style.height=(b.h*100)+'%';
+    d.innerHTML='<span class="tag">'+b.id+(b.desc?' · '+escapeHtml(b.desc.slice(0,18)):'')+'</span><span class="handle"></span>';
+    d.addEventListener('pointerdown',e=>startDrag(e,i,d));
+    stage.appendChild(d);
+  });
+  const list=document.getElementById('boxList');list.innerHTML='';
+  boxes.forEach((b,i)=>{
+    const row=document.createElement('div');row.className='boxrow';
+    row.innerHTML='<span class="bid">'+b.id+'</span>';
+    const inp=document.createElement('input');inp.type='text';inp.placeholder='What goes in this box? e.g. a red hot-air balloon';inp.value=b.desc;
+    inp.addEventListener('input',()=>{b.desc=inp.value;renderBoxes();buildLayout();});
+    inp.addEventListener('focus',()=>{selBox=i;renderBoxes();});
+    const del=document.createElement('button');del.className='mini-btn del';del.textContent='✕';
+    del.addEventListener('click',()=>{boxes.splice(i,1);selBox=-1;renderBoxes();buildLayout();});
+    row.appendChild(inp);row.appendChild(del);list.appendChild(row);
+  });
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function startDrag(e,i,el){
+  e.preventDefault();selBox=i;renderBoxes();
+  const target=stage.querySelectorAll('.bbox')[i];if(!target)return;
+  const isHandle=e.target.classList.contains('handle');
+  const rect=stage.getBoundingClientRect();
+  const sx=e.clientX,sy=e.clientY,b0={...boxes[i]};
+  function move(ev){
+    const dx=(ev.clientX-sx)/rect.width,dy=(ev.clientY-sy)/rect.height;const b=boxes[i];
+    if(isHandle){b.w=Math.min(1-b.x,Math.max(0.05,b0.w+dx));b.h=Math.min(1-b.y,Math.max(0.05,b0.h+dy));}
+    else{b.x=Math.min(1-b.w,Math.max(0,b0.x+dx));b.y=Math.min(1-b.h,Math.max(0,b0.y+dy));}
+    target.style.left=(b.x*100)+'%';target.style.top=(b.y*100)+'%';target.style.width=(b.w*100)+'%';target.style.height=(b.h*100)+'%';
+    buildLayout();
+  }
+  function up(){window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);renderBoxes();}
+  window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);
+}
+function r2(n){return Math.round(n*100)/100;}
+function boxesJson(){
+  return JSON.stringify(boxes.map(b=>({id:b.id,desc:b.desc||'an element',bbox:[r2(b.y),r2(b.x),r2(b.y+b.h),r2(b.x+b.w)]})),null,1);
+}
+function buildLayout(){
+  const scene=val('l_scene');
+  document.getElementById('layJson').textContent=boxes.length?boxesJson():'Add a box to generate boxes.json…';
+  let out='';
+  if(scene)out+=cap(scene)+'. ';
+  if(boxes.length){out+='Layout: '+boxes.map(b=>b.id+' is '+(b.desc||'an element')+' (bbox [y_min '+r2(b.y)+', x_min '+r2(b.x)+', y_max '+r2(b.y+b.h)+', x_max '+r2(b.x+b.w)+'])').join('; ')+'. Describe each element inside its box and keep the overall scene coherent.';}
+  document.getElementById('layOut').textContent=out||'Write a scene line and add boxes to build your layout caption…';
+}
+function presetLayout(){
+  clearBoxes();
+  document.getElementById('l_scene').value='hot-air balloons over a green valley at sunrise';
+  boxes=[{id:'obj_1',desc:'a red hot-air balloon',x:0.10,y:0.08,w:0.32,h:0.37},{id:'obj_2',desc:'a lighthouse on a cliff',x:0.60,y:0.30,w:0.30,h:0.65}];
+  boxSeq=2;selBox=-1;renderBoxes();buildLayout();
+}
+/* ---- edit ---- */
+function buildEdit(){
+  const refs=val('e_refs'),fin=val('e_final'),chg=val('e_change'),keep=val('e_keep');
+  let parts=[];
+  if(fin)parts.push(cap(fin.replace(/\.$/,''))+'.');
+  if(chg)parts.push('The edit: '+chg.replace(/\.$/,'')+'.');
+  if(keep)parts.push('Keep unchanged: '+keep.replace(/\.$/,'')+'.');
+  parts.push('Reference setup: '+refs+' reference image'+(refs==='1'?'':'s')+'; the first reference sets the output size.');
+  const out=parts.join(' ');
+  document.getElementById('editOut').textContent=fin?out:'Describe the final frame to build your edit prompt…';
+  document.getElementById('editChars').textContent=fin?out.split(/\s+/).filter(Boolean).length+' words':'';
+}
+function presetEdit(k){
+  const P={
+   bandana:{refs:'1',final:'A happy brown dog sitting on a wooden porch, wearing a bright red bandana tied around its neck, fur and expression exactly as in the reference',change:'add the red bandana around the dog\u2019s neck',keep:'the dog\u2019s face, fur pattern and pose, the porch, and the daylight'},
+   mug:{refs:'2',final:'A white ceramic mug on a kitchen counter, printed with the dog from the second image sitting in the same pose, the print wrapping naturally around the curved surface',change:'print the dog from image 2 onto the mug from image 1',keep:'the mug\u2019s shape and handle, the counter, and the soft kitchen light'}
+  }[k];if(!P)return;
+  document.getElementById('e_refs').value=P.refs;document.getElementById('e_final').value=P.final;
+  document.getElementById('e_change').value=P.change;document.getElementById('e_keep').value=P.keep;
+  buildEdit();
+}
+function copyText(id,btn){
+  const t=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(t).then(()=>{const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=o,1500);});
+}
+function buildAll(){buildCaption();buildLayout();buildEdit();}
+['c_medium','c_shot','c_subject','c_details','c_action','c_setting','c_lighting','c_palette','c_style','c_text','s_model','s_size','s_seed','s_out'].forEach(id=>{document.getElementById(id).addEventListener('input',buildCaption);});
+['e_refs','e_final','e_change','e_keep','e_model'].forEach(id=>{document.getElementById(id).addEventListener('input',buildEdit);});
+setRatio();presetCaption('dog');buildLayout();buildEdit();
+</script>
+</body>
+</html>

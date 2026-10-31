@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="fWZOyCIfCth5cZqTbJjaUXBtl6xDfTnVt5WJs4gEsv8">
+<title>Ideogram 4.5 Prompt Builder — Free Prompt Generator for Posters, Menus & Packaging</title>
+<meta name="description" content="Free Ideogram 4.5 prompt builder. Assemble precise prompts with exact text, brand colors and layout — plus precision edit instructions for Ideogram 4.5's multi-turn editing. No sign-up.">
+<link rel="canonical" href="https://ideogram45.qqbridge.workers.dev/">
+<meta property="og:title" content="Ideogram 4.5 Prompt Builder">
+<meta property="og:description" content="Build precise Ideogram 4.5 prompts with exact text, colors and layout. Free, no sign-up.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ideogram45.qqbridge.workers.dev/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"What is Ideogram 4.5?","acceptedAnswer":{"@type":"Answer","text":"Ideogram 4.5 is Ideogram's image model released on September 30, 2026. Its headline feature is precise multi-turn editing: you can change one specified part of an image — a headline, a color, a product — while the rest of the image stays intact across many consecutive edit rounds, at native 2K resolution."}},
+{"@type":"Question","name":"How do I write a good Ideogram 4.5 prompt?","acceptedAnswer":{"@type":"Answer","text":"Name the design type first (poster, menu, packaging), describe the subject, put every piece of in-image text in quotation marks in reading order, state your brand colors as hex values, and describe the layout. For edits, name exactly one change per turn and list what must stay unchanged."}},
+{"@type":"Question","name":"Should I turn Magic Prompt off for text designs?","acceptedAnswer":{"@type":"Answer","text":"Yes, if the exact wording matters. Magic Prompt rewrites and expands your prompt, which can alter or drop your carefully quoted text. For menus, posters and packaging with exact copy, keep Magic Prompt off and write the full description yourself — this builder does that for you."}},
+{"@type":"Question","name":"How much does Ideogram 4.5 cost?","acceptedAnswer":{"@type":"Answer","text":"Pricing is per image across four quality tiers, reported from 0.8 cents at the economy tier to 22 cents at the top tier. A practical workflow is to iterate drafts at the lowest tier and render only the final keeper at maximum quality."}},
+{"@type":"Question","name":"What is Zoom Editing in Ideogram 4.5?","acceptedAnswer":{"@type":"Answer","text":"Zoom Editing lets you edit a small region of a large image at its full original resolution — Ideogram demonstrated it on a 4,016 × 6,016 pixel source — and stitches the crop back seamlessly, so fine details like a logo or fabric texture can be refined without softening the rest of the image."}}
+]}
+</script>
+<style>
+:root{--bg:#0e1116;--panel:#171c24;--panel2:#1e2530;--line:#2a3342;--txt:#e8edf4;--dim:#9aa7b8;--acc:#ffb454;--acc2:#5ec8d8;--ok:#41d19a;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+a{color:var(--acc2)}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+header{padding:44px 0 8px;text-align:center}
+header h1{font-size:2rem;line-height:1.2}
+header h1 span{color:var(--acc)}
+header p{color:var(--dim);max-width:640px;margin:12px auto 0}
+.badges{margin:16px 0 4px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.badge{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;padding:3px 12px;font-size:.8rem}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:26px 0}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font-size:1rem;cursor:pointer}
+.tab.active{background:var(--acc);color:#1a1206;border-color:var(--acc);font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:.83rem;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:.02em}
+.field input[type=text],.field select,.field textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px 11px;font-size:.95rem;font-family:inherit}
+.field textarea{min-height:64px;resize:vertical}
+.field.full{grid-column:1/-1}
+.textline{display:flex;gap:8px;margin-bottom:8px}
+.textline input[type=text]{flex:1}
+.textline select{width:128px;flex:none}
+.mini-btn{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.mini-btn:hover{color:var(--txt);border-color:var(--acc2)}
+.colors{display:flex;gap:10px}
+.colorbox{flex:1}
+.colorbox input[type=color]{width:100%;height:40px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;cursor:pointer}
+.colorbox input[type=text]{margin-top:6px;text-align:center;font-size:.85rem}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.checks label{display:flex;gap:6px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.87rem;color:var(--txt);cursor:pointer;font-weight:400;margin:0}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 16px}
+.presets span{color:var(--dim);font-size:.87rem;align-self:center}
+.outbox{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px}
+.outhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.outhead h3{font-size:1rem}
+.fmt{display:flex;gap:6px}
+.fmt button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.fmt button.active{color:#1a1206;background:var(--acc2);border-color:var(--acc2);font-weight:700}
+#output{width:100%;background:#0a0d11;border:1px solid var(--line);border-radius:10px;color:#d7f0e4;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9rem;min-height:130px;white-space:pre-wrap;word-break:break-word;margin-top:12px}
+.copyrow{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+#copyBtn{background:var(--acc);color:#1a1206;border:none;border-radius:10px;padding:12px 26px;font-size:1rem;font-weight:700;cursor:pointer}
+#copyBtn:hover{filter:brightness(1.08)}
+.chars{color:var(--dim);font-size:.83rem}
+.tip{background:#14202b;border:1px solid #20455a;border-radius:10px;padding:11px 14px;color:#bfe3f2;font-size:.88rem;margin-top:14px}
+section.content{margin:38px 0}
+section.content h2{font-size:1.35rem;margin-bottom:12px}
+section.content h2 span{color:var(--acc)}
+section.content p,section.content li{color:#c6d0dd}
+section.content ul{padding-left:20px}
+section.content li{margin:5px 0}
+.example{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin:12px 0}
+.example h3{font-size:1rem;margin-bottom:6px;color:var(--acc2)}
+.example p{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86rem;color:#d7f0e4;white-space:pre-wrap}
+.example button{margin-top:10px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin:9px 0}
+details summary{cursor:pointer;font-weight:600}
+details p{margin-top:8px;color:#c6d0dd}
+
+.fb{max-width:640px;margin:38px auto 0;text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.fb h3{margin:0 0 6px;font-size:1rem}
+.fb p{margin:0 0 12px;color:var(--dim);font-size:.88rem}
+.fb textarea,.fb input[type=text]{width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:8px;color:inherit;padding:9px 11px;font:inherit;margin-bottom:10px}
+.fb button{background:#0f766e;color:#fff;border:0;border-radius:8px;padding:9px 18px;font:inherit;cursor:pointer}
+.fb button:disabled{opacity:.55;cursor:default}
+.fb .st{margin-left:12px;font-size:.88rem;color:var(--dim)}
+footer{border-top:1px solid var(--line);margin-top:44px;padding:22px 0 34px;color:var(--dim);font-size:.85rem;text-align:center}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Ideogram 4.5 <span>Prompt Builder</span></h1>
+<p>Assemble precise prompts for Ideogram 4.5 — exact in-image text, brand colors, layout and hierarchy for posters, menus and packaging, plus precision edit instructions for multi-turn editing. Free, no sign-up, nothing leaves your browser.</p>
+<div class="badges"><span class="badge">For Ideogram 4.5 (Sep 30, 2026)</span><span class="badge">Create + Edit modes</span><span class="badge">Natural &amp; JSON output</span></div>
+</header>
+
+<div class="tool">
+<div class="tabs">
+<button class="tab active" id="tabCreate" onclick="switchMode('create')">✏️ Create a design</button>
+<button class="tab" id="tabEdit" onclick="switchMode('edit')">🎯 Precision edit</button>
+</div>
+
+<!-- CREATE MODE -->
+<div id="modeCreate">
+<div class="presets"><span>Try a preset:</span>
+<button class="mini-btn" onclick="preset('menu')">☕ Café menu board</button>
+<button class="mini-btn" onclick="preset('poster')">🧴 Product ad poster</button>
+<button class="mini-btn" onclick="preset('book')">📕 Book cover</button>
+</div>
+<div class="grid">
+<div class="field"><label>Design type</label>
+<select id="c_type">
+<option>poster</option><option>menu board</option><option>product packaging</option><option>logo</option>
+<option>social media post</option><option>book cover</option><option>flyer</option><option>business card</option>
+<option>t-shirt graphic</option><option>sticker</option><option>infographic</option><option>website hero banner</option>
+</select></div>
+<div class="field"><label>Visual style</label>
+<select id="c_style">
+<option>modern minimalist</option><option>photorealistic</option><option>flat vector illustration</option>
+<option>3D render</option><option>vintage retro</option><option>neon cyberpunk</option><option>watercolor</option>
+<option>hand-drawn</option><option>bold Swiss typographic</option><option>luxury editorial</option>
+</select></div>
+<div class="field full"><label>Subject — what is in the image?</label>
+<textarea id="c_subject" placeholder="e.g. a rustic wooden café table with a ceramic cup of latte, croissants on a plate, soft morning window light"></textarea></div>
+<div class="field full"><label>Exact text (in reading order) — roles set size &amp; placement</label>
+<div id="textLines"></div>
+<button class="mini-btn" onclick="addLine()">+ Add a line of text</button></div>
+<div class="field"><label>Brand colors</label>
+<div class="colors">
+<div class="colorbox"><input type="color" id="col1" value="#0f766e"><input type="text" id="col1hex" value="#0F766E"></div>
+<div class="colorbox"><input type="color" id="col2" value="#fff7e6"><input type="text" id="col2hex" value="#FFF7E6"></div>
+<div class="colorbox"><input type="color" id="col3" value="#ff6b57"><input type="text" id="col3hex" value="#FF6B57"></div>
+</div></div>
+<div class="field"><label>Composition / layout</label>
+<select id="c_comp">
+<option>centered composition with generous negative space</option>
+<option>rule-of-thirds layout</option>
+<option>full-bleed image with text overlaid at the top</option>
+<option>split layout, image on the left and text on the right</option>
+<option>top-down flat lay</option>
+<option>grid layout with clear sections</option>
+</select></div>
+<div class="field"><label>Mood &amp; lighting</label>
+<select id="c_mood">
+<option>warm natural daylight</option><option>soft studio lighting</option><option>dramatic evening mood</option>
+<option>bright and airy</option><option>dark and moody</option><option>golden hour glow</option>
+</select></div>
+<div class="field"><label>Aspect ratio (set this inside Ideogram)</label>
+<select id="c_aspect">
+<option>1:1 (square)</option><option>16:9 (landscape)</option><option>9:16 (portrait / story)</option>
+<option>3:2</option><option>2:3</option><option>4:5</option><option>5:4</option>
+</select></div>
+<div class="field full"><label>Background (optional)</label>
+<input type="text" id="c_bg" placeholder="e.g. blurred café interior, shallow depth of field"></div>
+<div class="field full"><label>Avoid (optional)</label>
+<input type="text" id="c_avoid" placeholder="e.g. no people, no watermark, no extra text, no distorted letters"></div>
+</div>
+</div>
+
+<!-- EDIT MODE -->
+<div id="modeEdit" class="hidden">
+<div class="grid">
+<div class="field"><label>Edit category (Ideogram 4.5's ten precision edits)</label>
+<select id="e_cat">
+<option>in-image text modification</option><option>color and lighting correction</option>
+<option>product photography change</option><option>interior design change</option>
+<option>architecture change</option><option>photo restoration</option>
+<option>sketch to image</option><option>style reference application</option>
+<option>reframe / aspect change</option><option>object removal or swap</option>
+</select></div>
+<div class="field"><label>Edit round (multi-turn)</label>
+<select id="e_turn"><option>first edit</option><option>second edit</option><option>third edit</option><option>later edit in a long chain</option></select></div>
+<div class="field full"><label>Change exactly this</label>
+<textarea id="e_change" placeholder="e.g. change the headline price from $12 to $9 and make the headline text coral red"></textarea></div>
+<div class="field full"><label>Keep unchanged</label>
+<div class="checks" id="keepChecks">
+<label><input type="checkbox" value="the subject and its position" checked> subject &amp; position</label>
+<label><input type="checkbox" value="all other text, its wording, fonts and placement" checked> other text</label>
+<label><input type="checkbox" value="the color palette" checked> colors</label>
+<label><input type="checkbox" value="the layout and composition"> layout</label>
+<label><input type="checkbox" value="the background"> background</label>
+<label><input type="checkbox" value="the lighting and shadows"> lighting</label>
+<label><input type="checkbox" value="people's faces and features"> faces</label>
+</div></div>
+<div class="field full"><label><input type="checkbox" id="e_zoom"> Zoom Editing — apply at full original resolution and blend edges seamlessly</label></div>
+</div>
+</div>
+
+<div class="outbox">
+<div class="outhead"><h3>Your prompt</h3>
+<div class="fmt" id="fmtRow">
+<button id="fmtNat" class="active" onclick="setFmt('nat')">Natural language</button>
+<button id="fmtJson" onclick="setFmt('json')">Structured JSON</button>
+</div></div>
+<div id="output"></div>
+<div class="copyrow">
+<button id="copyBtn" onclick="copyOut()">📋 Copy prompt</button>
+<span class="chars" id="charCount"></span>
+<span class="chars" id="settingHint"></span>
+</div>
+<div class="tip" id="tipBox">💡 <b>Tip:</b> turn <b>Magic Prompt OFF</b> in Ideogram when your design carries exact text — it rewrites prompts and can change your wording.</div>
+</div>
+</div>
+
+<section class="content">
+<h2>What is <span>Ideogram 4.5</span>?</h2>
+<p>Ideogram 4.5, released on <b>September 30, 2026</b>, is Ideogram's most precise image editing model. Earlier models regenerate the whole picture on every edit, so faces shift, text warps and quality erodes round after round — a failure Ideogram calls <i>drift</i>. Version 4.5 is built to confine each change to exactly the region you specify and keep untouched elements stable across long edit chains, at native 2K resolution. Ideogram also announced distribution partnerships with Picsart, Runway, Pika and Leonardo AI, and pricing runs across four quality tiers reported from 0.8¢ to 22¢ per image.</p>
+<p>That precision only pays off if your instructions are precise too. A vague prompt makes the model guess; a structured prompt — design type, subject, exact quoted text in reading order, hex colors, layout — leaves nothing to chance. That is what the builder above assembles for you.</p>
+<h3>Ideogram 4.5 vs Ideogram 4.0</h3>
+<table style="border-collapse:collapse;width:100%;margin:12px 0">
+<tr><th style="border:1px solid #ccc;padding:6px 8px;text-align:left"></th><th style="border:1px solid #ccc;padding:6px 8px;text-align:left">Ideogram 4.0</th><th style="border:1px solid #ccc;padding:6px 8px;text-align:left">Ideogram 4.5</th></tr>
+<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Built for</b></td><td style="border:1px solid #ccc;padding:6px 8px">Generating images with accurate text</td><td style="border:1px solid #ccc;padding:6px 8px">Editing an image over many rounds</td></tr>
+<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Untouched areas</b></td><td style="border:1px solid #ccc;padding:6px 8px">Re-rendered with each change</td><td style="border:1px solid #ccc;padding:6px 8px">Copied exactly from the source</td></tr>
+<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Control inputs</b></td><td style="border:1px solid #ccc;padding:6px 8px">Layout boxes and a 16-color palette</td><td style="border:1px solid #ccc;padding:6px 8px">A mask plus up to 4 reference images</td></tr>
+<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Text</b></td><td style="border:1px solid #ccc;padding:6px 8px">Renders new text</td><td style="border:1px solid #ccc;padding:6px 8px">Rewrites or translates existing text, keeping its lettering</td></tr>
+</table>
+<p>4.5 also adds native 2K output, Zoom Editing (a full-resolution region edit, demonstrated on a 4,016 × 6,016 px source), and four quality tiers reported from 0.8¢ to 22¢ per image.</p>
+</section>
+
+<section class="content">
+<h2>How to write a good <span>Ideogram 4.5</span> prompt</h2>
+<ul>
+<li><b>Lead with the design type.</b> "A menu board…", "Product packaging…" — the first words set the model's whole layout logic.</li>
+<li><b>Quote every word that must appear.</b> Text in quotation marks is treated as literal copy. List lines in reading order and give each a role (headline, price, call-to-action) so size and placement come out right.</li>
+<li><b>Use hex codes for brand colors.</b> "Teal" is a guess; #0F766E is an instruction.</li>
+<li><b>One change per edit turn.</b> 4.5's strength is multi-turn editing — spend it wisely. Change the headline, check it, then change the background. Bundling five changes into one turn brings drift back.</li>
+<li><b>Say what stays.</b> In every edit, explicitly list what must remain unchanged: other text, faces, palette, layout.</li>
+<li><b>Draft cheap, render once.</b> Iterate at the lowest quality tier, then render only the final keeper at top quality.</li>
+<li><b>Turn Magic Prompt off for exact text.</b> It expands and rewrites prompts — great for vague ideas, risky for menus and packaging.</li>
+</ul>
+</section>
+
+<section class="content">
+<h2>Example prompts <span>(copy &amp; adapt)</span></h2>
+<div class="example"><h3>☕ Café menu board</h3>
+<p id="ex1">A modern minimalist menu board design featuring a rustic café chalkboard on a warm cream wall. The text reads, in order: "MORNING BREW CAFÉ" (large headline at the top), "Fresh Croissants — $4" (menu item line), "Oat Latte — $5" (menu item line), "Open daily 7:00–19:00" (small footer text). Color palette: deep teal (#0F766E), warm cream (#FFF7E6), accent coral (#FF6B57). Composition: centered composition with generous negative space. Mood and lighting: warm natural daylight. Avoid: no people, no watermark, no extra text, no distorted letters.</p>
+<button class="mini-btn" onclick="copyText('ex1')">📋 Copy</button></div>
+<div class="example"><h3>🧴 Skincare product ad</h3>
+<p id="ex2">A luxury editorial poster design featuring a frosted glass serum bottle on wet stone beside green leaves, water droplets on the surface. The text reads, in order: "LUMIÈRE" (large headline at the top), "Vitamin C Serum" (subheadline), "Glow in 14 days" (call-to-action near the bottom). Color palette: sage green (#9CAF88), ivory (#FFFFF0), charcoal (#36454F). Composition: rule-of-thirds layout. Mood and lighting: soft studio lighting. Background: soft gradient, subtle mist. Avoid: no hands, no watermark, no extra text.</p>
+<button class="mini-btn" onclick="copyText('ex2')">📋 Copy</button></div>
+<div class="example"><h3>🎯 Multi-turn edit (turn 2)</h3>
+<p id="ex3">Edit this image (in-image text modification): change the headline price from "$12" to "$9" and set the headline text color to coral red (#FF6B57). This is the second edit in a multi-turn session — apply only this change. Keep unchanged: the subject and its position; all other text, its wording, fonts and placement; the background; the lighting and shadows. Preserve the original resolution and fine detail in all unedited areas.</p>
+<button class="mini-btn" onclick="copyText('ex3')">📋 Copy</button></div>
+<div class="example"><h3>🔁 Multi-turn chain (turn 1 → 2 → 3)</h3>
+<p>Start from the café menu board above, then run one change per turn. Each turn names what stays, so nothing else moves.</p>
+<p id="ex4a"><b>Turn 2:</b> Edit this image (in-image text modification): change "Oat Latte — $5" to "Oat Latte — $6". Apply only this change. Keep unchanged: all other text, its wording, fonts and placement; the colors; the background; the lighting. Preserve the original resolution and fine detail in all unedited areas.</p>
+<button class="mini-btn" onclick="copyText('ex4a')">📋 Copy turn 2</button>
+<p id="ex4b"><b>Turn 3:</b> Edit this image (in-image text modification): change the footer text from "Open daily 7:00–19:00" to "Open daily 8:00–20:00". Apply only this change. Keep unchanged: all other text, its wording, fonts and placement; the colors; the background; the lighting. Preserve the original resolution and fine detail in all unedited areas.</p>
+<button class="mini-btn" onclick="copyText('ex4b')">📋 Copy turn 3</button></div>
+</section>
+
+<section class="content">
+<h2>Frequently asked questions</h2>
+<details><summary>What is Ideogram 4.5?</summary><p>Ideogram's image model released September 30, 2026, focused on precise multi-turn editing: change one specified part of an image while the rest stays intact across consecutive edits, at native 2K resolution.</p></details>
+<details><summary>How much does Ideogram 4.5 cost?</summary><p>Per-image pricing across four quality tiers, reported from 0.8¢ (economy) to 22¢ (top tier). Iterate drafts cheaply and render the final at top quality.</p></details>
+<details><summary>Should I turn Magic Prompt off?</summary><p>Yes when exact text matters. Magic Prompt rewrites your prompt, which can alter quoted copy. For menus, posters and packaging, keep it off and use a fully written prompt.</p></details>
+<details><summary>What is Zoom Editing?</summary><p>Editing a small region at the image's full original resolution — demonstrated on a 4,016 × 6,016 px source — then stitching it back seamlessly. Ideal for logos, labels and fabric detail.</p></details>
+<details><summary>Is this tool affiliated with Ideogram?</summary><p>No. This is an independent, free prompt-building tool for people who use Ideogram 4.5. Ideogram is a trademark of Ideogram Inc.</p></details>
+</section>
+
+<section class="fb" id="feedback">
+<h3>Found a bug, or have a suggestion?</h3>
+<p>Tell us what went wrong or what would make this tool better. Only sent when you tap the button.</p>
+<textarea id="f_msg" rows="3" maxlength="2000" placeholder="Describe the problem or idea..."></textarea>
+<input type="text" id="f_contact" maxlength="120" placeholder="Email (optional, if you want a reply)">
+<input type="text" id="f_hp" autocomplete="off" style="display:none">
+<button id="f_send" type="button">Send feedback</button><span class="st" id="f_status"></span>
+</section>
+<footer>
+<p>Ideogram 4.5 Prompt Builder — an independent free tool. Not affiliated with Ideogram Inc.<br>
+Prompts are generated locally in your browser; nothing you type is sent anywhere.</p>
+<p style="margin-top:10px">More free prompt builders: <a href="https://flux3klein.qqbridge.workers.dev/">FLUX 3 Klein Prompt Builder</a> — upsampler-style captions &amp; bounding-box JSON for Black Forest Labs' open-weights model. · <a href="https://clipprompt.kill-bill.de5.net/">ClipPrompt</a> — turn a video into the prompt that could have made it.</p>
+</footer>
+</div>
+
+<script>
+let mode='create', fmt='nat';
+const $=id=>document.getElementById(id);
+const roles={headline:'large headline at the top',subheadline:'subheadline',body:'body text',menu:'menu item line',price:'price line',cta:'call-to-action near the bottom',footer:'small footer text',label:'label text'};
+function addLine(text='',role='headline'){
+  const row=document.createElement('div');row.className='textline';
+  row.innerHTML='<input type="text" placeholder="Type the exact words" value="'+text.replace(/"/g,'&quot;')+'"><select>'+
+    Object.keys(roles).map(r=>'<option value="'+r+'"'+(r===role?' selected':'')+'>'+r+'</option>').join('')+
+    '</select><button class="mini-btn" title="Remove">✕</button>';
+  row.querySelector('button').onclick=()=>{row.remove();gen();};
+  row.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',gen));
+  $('textLines').appendChild(row);
+}
+function lines(){return [...$('textLines').querySelectorAll('.textline')].map(r=>({t:r.querySelector('input').value.trim(),r:r.querySelector('select').value})).filter(x=>x.t);}
+function colors(){return [$('col1hex').value,$('col2hex').value,$('col3hex').value].map(s=>s.trim().toUpperCase()).filter(s=>/^#[0-9A-F]{6}$/.test(s));}
+function syncColor(i){const c=$('col'+i);const h=$('col'+i+'hex');c.addEventListener('input',()=>{h.value=c.value.toUpperCase();gen();});h.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(h.value))c.value=h.value;gen();});}
+[1,2,3].forEach(syncColor);
+function natCreate(){
+  const type=$('c_type').value,style=$('c_style').value,subj=$('c_subject').value.trim();
+  let p='A '+style+' '+type+' design';
+  if(subj)p+=' featuring '+subj.replace(/\.$/,'');
+  p+='.';
+  const ls=lines();
+  if(ls.length){p+=' The text reads, in order: '+ls.map(x=>'"'+x.t+'" ('+roles[x.r]+')').join(', ')+'.';}
+  const cs=colors(); if(cs.length)p+=' Color palette: '+cs.join(', ')+'.';
+  p+=' Composition: '+$('c_comp').value+'.';
+  p+=' Mood and lighting: '+$('c_mood').value+'.';
+  const bg=$('c_bg').value.trim(); if(bg)p+=' Background: '+bg.replace(/\.$/,'')+'.';
+  const av=$('c_avoid').value.trim(); if(av)p+=' Avoid: '+av.replace(/\.$/,'')+'.';
+  return p;
+}
+function jsonCreate(){
+  const o={type:$('c_type').value,style:$('c_style').value,subject:$('c_subject').value.trim(),
+    text:lines().map(x=>({content:x.t,role:x.r})),colors:colors(),composition:$('c_comp').value,
+    mood_lighting:$('c_mood').value,background:$('c_bg').value.trim(),avoid:$('c_avoid').value.trim(),aspect_ratio:$('c_aspect').value};
+  Object.keys(o).forEach(k=>{if(o[k]===''||(Array.isArray(o[k])&&!o[k].length))delete o[k];});
+  return JSON.stringify(o,null,2);
+}
+function editPrompt(asJson){
+  const cat=$('e_cat').value,chg=$('e_change').value.trim()||'…describe the change…';
+  const keeps=[...document.querySelectorAll('#keepChecks input:checked')].map(x=>x.value);
+  const turn=$('e_turn').value, zoom=$('e_zoom').checked;
+  if(asJson){const o={task:'edit',category:cat,turn:turn,change:chg,keep_unchanged:keeps,zoom_editing:zoom};return JSON.stringify(o,null,2);}
+  let p='Edit this image ('+cat+'): '+chg.replace(/\.$/,'')+'.';
+  p+=' This is the '+turn+' in a multi-turn session — apply only this change.';
+  if(keeps.length)p+=' Keep unchanged: '+keeps.join('; ')+'.';
+  if(zoom)p+=' Apply the edit at full original resolution (Zoom Editing) and blend the edges seamlessly.';
+  p+=' Preserve the original resolution and fine detail in all unedited areas.';
+  return p;
+}
+function gen(){
+  let out;
+  if(mode==='create'){out = fmt==='json'?jsonCreate():natCreate();
+    $('settingHint').textContent='⚙️ In Ideogram: aspect ratio '+$('c_aspect').value+', Magic Prompt OFF for exact text.';
+    $('tipBox').innerHTML='💡 <b>Tip:</b> turn <b>Magic Prompt OFF</b> in Ideogram when your design carries exact text — it rewrites prompts and can change your wording.';
+  }else{out=editPrompt(fmt==='json');
+    $('settingHint').textContent='⚙️ Paste this as your next message in the same Ideogram edit session.';
+    $('tipBox').innerHTML='💡 <b>Tip:</b> one change per turn. 4.5 holds detail across turns — bundling many changes into one message is what brings drift back.';
+  }
+  $('output').textContent=out;
+  $('charCount').textContent=out.length+' characters';
+}
+function switchMode(m){mode=m;$('tabCreate').classList.toggle('active',m==='create');$('tabEdit').classList.toggle('active',m==='edit');$('modeCreate').classList.toggle('hidden',m!=='create');$('modeEdit').classList.toggle('hidden',m!=='edit');$('fmtRow').style.visibility='visible';gen();}
+function setFmt(f){fmt=f;$('fmtNat').classList.toggle('active',f==='nat');$('fmtJson').classList.toggle('active',f==='json');gen();}
+function copyOut(){navigator.clipboard.writeText($('output').textContent).then(()=>{const b=$('copyBtn');b.textContent='✅ Copied!';setTimeout(()=>b.textContent='📋 Copy prompt',1600);});}
+function copyText(id){navigator.clipboard.writeText($(id).textContent).then(()=>{});}
+function preset(name){
+  switchMode('create');
+  const set=(id,v)=>{$(id).value=v;};
+  if(name==='menu'){set('c_type','menu board');set('c_style','modern minimalist');set('c_subject','a rustic café chalkboard on a warm cream wall, small potted herbs on the counter below');set('c_bg','blurred café interior, shallow depth of field');set('c_avoid','no people, no watermark, no extra text, no distorted letters');setLines([['MORNING BREW CAFÉ','headline'],['Fresh Croissants — $4','menu'],['Oat Latte — $5','menu'],['Open daily 7:00–19:00','footer']]);}
+  if(name==='poster'){set('c_type','poster');set('c_style','luxury editorial');set('c_subject','a frosted glass serum bottle on wet stone beside green leaves, water droplets on the surface');$('col1').value='#9caf88';$('col1hex').value='#9CAF88';$('col2').value='#fffff0';$('col2hex').value='#FFFFF0';$('col3').value='#36454f';$('col3hex').value='#36454F';set('c_bg','soft gradient, subtle mist');set('c_avoid','no hands, no watermark, no extra text');setLines([['LUMIÈRE','headline'],['Vitamin C Serum','subheadline'],['Glow in 14 days','cta']]);}
+  if(name==='book'){set('c_type','book cover');set('c_style','bold Swiss typographic');set('c_subject','a lone lighthouse on a rocky island under a huge rising moon, deep navy sea');set('c_bg','');set('c_avoid','no author photo, no barcode, no extra text');setLines([['THE LAST LIGHT','headline'],['A Novel','subheadline'],['J. R. MARLOWE','footer']]);}
+  gen();
+}
+function setLines(arr){$('textLines').innerHTML='';arr.forEach(x=>addLine(x[0],x[1]));}
+document.querySelectorAll('#modeCreate input,#modeCreate select,#modeCreate textarea,#modeEdit input,#modeEdit select,#modeEdit textarea').forEach(el=>el.addEventListener('input',gen));
+addLine('YOUR HEADLINE','headline');addLine('Your supporting line','subheadline');
+preset('menu');
+switchMode('create');
+
+$('f_send').addEventListener('click',async()=>{
+  const msg=$('f_msg').value.trim(), st=$('f_status'), btn=$('f_send');
+  if(msg.length<3){st.textContent='Please write a few words first.';return;}
+  btn.disabled=true; st.textContent='Sending...';
+  try{
+    const r=await fetch('/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:msg,contact:$('f_contact').value.trim(),hp:$('f_hp').value})});
+    const j=await r.json();
+    if(j.ok){st.textContent='Thanks! Feedback received.';$('f_msg').value='';$('f_contact').value='';}
+    else{st.textContent='Sorry, that did not go through. Please try again.';btn.disabled=false;}
+  }catch(e){st.textContent='Network error. Please try again.';btn.disabled=false;}
+});
+</script>
+</body>
+</html>

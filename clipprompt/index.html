@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="fWZOyCIfCth5cZqTbJjaUXBtl6xDfTnVt5WJs4gEsv8">
+<meta name="google-site-verification" content="aDz0jgqdQV47QH0HWDAhzbFqA-Ke8r-rBr8Ea0gWWE8">
+<title>ClipPrompt — Turn a Video into the Prompt That Could Have Made It</title>
+<meta name="description" content="Free ClipPrompt reverse prompt tool (preview): see how a video breaks down into subject, shots, camera and sound, and how that becomes a copyable prompt in Wan 3.0 format. No sign-up, no video leaves your browser.">
+<link rel="canonical" href="https://clipprompt.kill-bill.de5.net/">
+<meta property="og:title" content="ClipPrompt">
+<meta property="og:description" content="Turn a video into the prompt that could have made it: shot-by-shot breakdown plus a copyable prompt in Wan 3.0 format. Preview build — live analysis coming later.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://clipprompt.kill-bill.de5.net/">
+<meta name="twitter:card" content="summary">
+<style>
+:root{--bg:#0d1017;--panel:#161b25;--panel2:#1f2634;--line:#2b3446;--txt:#e9edf5;--dim:#9aa7ba;--acc:#7dd87d;--acc2:#6cb8f0;--warn:#f0c36c;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+a{color:var(--acc2)}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+header{padding:44px 0 8px;text-align:center}
+header h1{font-size:2rem;line-height:1.2}
+header h1 span{color:var(--acc)}
+header p{color:var(--dim);max-width:680px;margin:12px auto 0}
+.badges{margin:16px 0 4px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.badge{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;padding:3px 12px;font-size:.8rem}
+.badge.hot{border-color:#6b5a2a;color:var(--warn)}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:26px 0}
+.tool h2{font-size:1.2rem;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:.83rem;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:.02em}
+.field input[type=text],.field select,.field textarea,.field input[type=file]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px 11px;font-size:.95rem;font-family:inherit}
+.field textarea{min-height:60px;resize:vertical}
+.field.full{grid-column:1/-1}
+.mini-btn{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
+.mini-btn:hover{color:var(--txt);border-color:var(--acc2)}
+.outbox{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px}
+.outhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.outhead h3{font-size:1rem}
+.output{width:100%;background:#090c10;border:1px solid var(--line);border-radius:10px;color:#d9f2d9;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;min-height:110px;white-space:pre-wrap;word-break:break-word;margin-top:12px}
+.copyrow{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.copyBtn{background:var(--acc);color:#0d1a0d;border:none;border-radius:10px;padding:11px 22px;font-size:.95rem;font-weight:700;cursor:pointer}
+.copyBtn:hover{filter:brightness(1.08)}
+.copyBtn.alt{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+.chars{color:var(--dim);font-size:.83rem}
+.notice{background:#2a2110;border:1px solid #6b5a2a;border-radius:10px;padding:12px 14px;color:#f0dcb0;font-size:.9rem;margin-top:14px}
+.notice b{color:var(--warn)}
+.tip{background:#12241a;border:1px solid #245236;border-radius:10px;padding:11px 14px;color:#c4ecd2;font-size:.88rem;margin-top:14px}
+section.content{margin:38px 0}
+section.content h2{font-size:1.35rem;margin-bottom:12px}
+section.content h2 span{color:var(--acc)}
+section.content p,section.content li{color:#c7d0de}
+section.content ul,section.content ol{padding-left:22px;margin:8px 0}
+section.content li{margin-bottom:6px}
+table.shots{width:100%;border-collapse:collapse;margin:14px 0;font-size:.9rem}
+table.shots th,table.shots td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+table.shots th{background:var(--panel2);color:var(--dim);font-size:.82rem;letter-spacing:.02em}
+table.shots td{color:#c7d0de}
+table.shots td.t{font-family:ui-monospace,Menlo,monospace;color:var(--acc2);white-space:nowrap}
+.example-tag{display:inline-block;background:var(--warn);color:#241a05;font-weight:700;font-size:.78rem;border-radius:6px;padding:2px 9px;letter-spacing:.02em;margin-bottom:10px}
+#videoPreview{width:100%;max-height:360px;background:#090c10;border:1px solid var(--line);border-radius:10px;margin-top:12px;display:none}
+footer{border-top:1px solid var(--line);padding:22px 0 44px;color:var(--dim);font-size:.85rem;text-align:center}
+footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<h1>ClipPrompt <span>Reverse Prompt</span> Builder</h1>
+<p>Turn a video into the prompt that could have made it. The tool watches a clip, breaks it into subject, shots, camera and sound, then composes a copyable Wan 3.0-style prompt.</p>
+<div class="badges">
+<span class="badge hot">Preview build — live analysis not connected yet</span>
+<span class="badge">No sign-up</span>
+<span class="badge">No video leaves your browser</span>
+<span class="badge">Wan 3.0 prompt format</span>
+</div>
+</header>
+
+<div class="tool">
+<h2>Reverse a video</h2>
+<div class="grid">
+<div class="field full">
+<label for="videoFile">Video file (stays in your browser — nothing is uploaded)</label>
+<input type="file" id="videoFile" accept="video/*">
+<video id="videoPreview" controls playsinline></video>
+<div class="chars" id="fileMeta" style="margin-top:8px"></div>
+</div>
+<div class="field full">
+<label for="videoUrl">…or paste a video link (no fetching happens in this preview)</label>
+<input type="text" id="videoUrl" placeholder="https://…mp4 / YouTube / TikTok link">
+</div>
+<div class="field">
+<label for="hintSubject">Subject hint (optional)</label>
+<input type="text" id="hintSubject" placeholder="e.g. a street noodle vendor">
+</div>
+<div class="field">
+<label for="hintStyle">Style hint (optional)</label>
+<select id="hintStyle">
+<option value="">Auto (detect from the video)</option>
+<option>Cinematic</option>
+<option>Documentary</option>
+<option>Commercial / advertising</option>
+<option>Anime / stylised</option>
+<option>Realistic handheld</option>
+</select>
+</div>
+<div class="field full">
+<label for="hintLang">Output language</label>
+<select id="hintLang">
+<option>English</option>
+<option>Chinese</option>
+</select>
+</div>
+</div>
+<div class="copyrow">
+<button class="copyBtn" id="reverseBtn" type="button">Reverse this video</button>
+<button class="copyBtn alt" id="exampleBtn" type="button">See the worked example ↓</button>
+</div>
+<div class="notice" id="reverseNotice" style="display:none"><b>Preview build:</b> live reverse analysis is not connected yet — no model call happens, and your video is never sent anywhere. The worked example below shows exactly what the live tool will output, shot by shot. Live analysis arrives with the full version.</div>
+<div class="tip">How the live tool will work: it samples frames from your clip, reads subject, setting, motion, camera, style and sound, then writes one overall description, numbered shots with time ranges, and a continuity line — the official Wan 3.0 prompting pattern (Subject + Setting + Motion + Camera + Style + Sound).</div>
+</div>
+
+<section class="content" id="example">
+<h2><span>Worked example</span> — one clip, fully reversed</h2>
+<p><span class="example-tag">EXAMPLE — DESCRIBED CLIP, NOT A VIDEO FILE</span></p>
+<p><b>Sample clip: “Night Market Noodles”</b> · 12 seconds · 16:9 · 720p · night street-food stall. This preview embeds no video file; the shot list below is the exact breakdown a reverse pass produces, written out so you can see every decision the tool makes. Read the table first, then the prompt — the prompt is built directly from the table, nothing extra is invented.</p>
+
+<table class="shots">
+<tr><th>Shot</th><th>What happens</th><th>Camera</th><th>Sound</th></tr>
+<tr><td class="t">1 · 0:00–0:03</td><td>Wide establishing shot of a bustling night-market alley. Neon signs glow red and yellow above a noodle stall. Steam rises from a large wok as the vendor in a dark apron tosses noodles.</td><td>Slow dolly-in</td><td>Sizzling oil, crowd murmur, distant traffic</td></tr>
+<tr><td class="t">2 · 0:03–0:07</td><td>Medium close-up of the vendor's hands pulling fresh noodles. Flour dust drifts through warm tungsten light. Rhythmic chopping on a wooden board behind him.</td><td>Steady hold, slight handheld sway</td><td>Sizzle and chopping dominate</td></tr>
+<tr><td class="t">3 · 0:07–0:10</td><td>Close-up of a steaming bowl handed across the counter. Chopsticks lift glossy noodles as steam curls toward the lens.</td><td>Low angle, shallow depth of field</td><td>A quick slurp, the vendor's friendly call</td></tr>
+<tr><td class="t">4 · 0:10–0:12</td><td>Cut to a smiling customer on a small plastic stool. Neon reflections shimmer on the wet pavement, the stall's warm glow behind him.</td><td>Slow pull-back</td><td>Laughter, night-market ambience</td></tr>
+</table>
+
+<div class="outbox">
+<div class="outhead"><h3>Derived prompt in Wan 3.0 format (copy it, use it, change it)</h3></div>
+<div class="output" id="promptOut">A warm, cinematic night-market scene: a street noodle vendor works his stall under neon signs as steam and hungry customers fill the frame.
+Shot 1 (0:00–0:03): Wide establishing shot of a bustling night-market alley at night, neon signs glowing red and yellow above a noodle stall, steam rising from a large wok as the vendor tosses noodles; camera slowly dollies in; sound of sizzling oil, crowd murmur and distant traffic.
+Shot 2 (0:03–0:07): Medium close-up of the vendor's hands pulling fresh noodles, flour dust drifting through warm tungsten light, rhythmic chopping on a wooden board behind him; camera holds steady with a slight handheld sway; sizzle and chopping sounds dominate.
+Shot 3 (0:07–0:10): Close-up of a steaming bowl handed across the counter, chopsticks lifting glossy noodles as steam curls toward the lens; low camera angle, shallow depth of field; a quick slurp and the vendor's friendly call.
+Shot 4 (0:10–0:12): Cut to a smiling customer at a small plastic stool, neon reflections shimmering on the wet pavement, the stall's warm glow behind him; camera slowly pulls back; laughter and night-market ambience.
+Continuity: same vendor in a dark apron, same red-and-yellow stall signage, same warm tungsten lighting and wet-pavement reflections throughout; no change of location or time of day.</div>
+<div class="copyrow">
+<button class="copyBtn" id="copyBtn" type="button">Copy prompt</button>
+<button class="copyBtn alt" id="dlBtn" type="button">Download .txt</button>
+<span class="chars" id="copyMsg"></span>
+</div>
+</div>
+
+<h2 style="margin-top:30px">Why the prompt is written this way</h2>
+<ul>
+<li><b>One-line description first, then numbered shots.</b> The opener fixes subject, place and mood in one breath; the shots carry the sequence. That is the official Wan 3.0 pattern.</li>
+<li><b>Time ranges are consecutive and never overlap</b> (0:00–0:03, 0:03–0:07, 0:07–0:10, 0:10–0:12), and each shot carries <b>one clear action</b>. Treat a range as a time budget, not an exact edit point — never ask for three actions in one second.</li>
+<li><b>Camera and sound are written into every shot</b>, not left as decoration. “Slow dolly-in” and “sizzling oil” are part of the prompt, because Wan 3.0 generates native audio (dialogue, music, effects, ambience) by default.</li>
+<li><b>The continuity line comes last.</b> Identity, clothing, signage, lighting and layout are repeated here so the vendor, the stall and the wet pavement stay the same across cuts.</li>
+<li><b>“One continuous take” is deliberately NOT used.</b> That exact phrase forces no cuts; this clip has four cuts, so asking for one continuous take would fight the footage. Use it only for genuinely uncut clips.</li>
+</ul>
+</section>
+
+<section class="content">
+<h2>How reverse-prompting <span>works</span></h2>
+<ol>
+<li><b>Watch.</b> The live tool samples frames across the clip and reads the audio track, so motion and sound are observed, not guessed.</li>
+<li><b>Break down.</b> Each shot gets subject, setting, motion, camera, style and sound — the same six slots the prompt formula uses.</li>
+<li><b>Compose.</b> The slots are written up as one description, numbered shots with time ranges, and a continuity line, ready to paste into Wan 3.0.</li>
+</ol>
+<h2 style="margin-top:26px">What it <span>cannot</span> do — the honesty boundary</h2>
+<ul>
+<li><b>It recovers an equivalent prompt, not the exact original.</b> Videos carry no prompt metadata, and generation is random — nobody can read back the precise words someone typed. What you get is a high-fidelity prompt that should reproduce a very similar clip.</li>
+<li><b>Timestamps are intent signals, not frame-accurate edits.</b> How strictly Wan 3.0 honours in-prompt timestamps has not been independently verified; treat ranges as “roughly this part of the clip”, not as cut points.</li>
+<li><b>It cannot invent what is not in the footage.</b> If a detail never appears on screen or on the soundtrack, a good reverse prompt leaves it out instead of hallucinating it.</li>
+</ul>
+</section>
+
+<section class="content">
+<h2>What the <span>live version</span> will add</h2>
+<ul>
+<li>Real analysis of your video by Qwen3-VL (the planned reverse engine), returning the same shot table and prompt for your own clip.</li>
+<li>The token count of every call, shown next to the result, so the cost of each reverse is visible before you run the next one.</li>
+<li>An optional verification end: feed the reversed prompt back into Wan 3.0 generation and compare how close the new clip looks to the original.</li>
+<li><b>First reverse free:</b> your first reverse completes before any paywall appears — payment only comes after your first operation.</li>
+</ul>
+<p>None of that needs an account, a login or a payment in this preview — and the preview makes no network calls at all.</p>
+</section>
+
+<section class="content">
+<h2>Cost <span>notes</span> (for the live version — the preview costs nothing)</h2>
+<ul>
+<li><b>Reverse engine (Qwen3-VL, qwen3-vl-plus, via DashScope):</b> International / Singapore — $0.20 input / $1.60 output per 1M tokens for requests up to 32K input tokens (tiered higher for larger requests); Beijing — $0.143 / $1.434. Singapore offers a 1M-token free quota for 90 days. Per-video cost depends on how many frames are sampled and cannot be quoted until a real call is measured.</li>
+<li><b>Verification end (Wan 3.0 generation):</b> about $0.05 / $0.10 / $0.20 per second at 480p / 720p / 1080p.</li>
+<li>Prices are from the official platform pages — check your platform before budgeting. This preview build calls no API and spends nothing.</li>
+</ul>
+</section>
+
+<section class="content">
+<h2><span>Pricing</span></h2>
+<ul>
+<li><b>First reverse free:</b> your first reverse completes before any paywall appears.</li>
+<li><b>Reverse Credits — 10 reverses — $5 one-time (USD, taxes included).</b> <a href="https://www.creem.io/product/prod_7NHHKarzCVVigJi8nDLGdN">Buy 10 reverses</a>. Credits are tied to the email you pay with; the live tool unlocks them when you enter that email. Payments are securely handled by Creem — we never see your card details.</li>
+</ul>
+<p>Checkout opens once the store is approved for live payments; the preview build takes no payment yet.</p>
+</section>
+
+<section class="content">
+<h2>FAQ</h2>
+<ul>
+<li><b>Does this tool generate videos?</b> No. It writes prompts. You run the prompt yourself in Wan 3.0 (or any video model) — the preview does not generate anything.</li>
+<li><b>Why is there no video upload?</b> This is a preview build: the reverse engine is not connected yet, so there is nothing to upload to. Picking a file only previews it locally in your browser.</li>
+<li><b>Will the reversed prompt reproduce my exact video?</b> No — it reproduces a very similar one. The original wording is not recoverable from the video itself.</li>
+<li><b>What clip lengths work?</b> Wan 3.0 clips run 2–30 seconds at 30fps (480p / 720p / 1080p; 16:9, 9:16, 1:1, 4:3, 3:4). The live tool will cap length and frame count per call to keep costs visible.</li>
+<li><b>Is Wan 3.0 open-weights?</b> No. Wan 2.2 is the last Apache flagship; Wan 3.0 weights are not open — do not pitch this as an open-model tool.</li>
+</ul>
+</section>
+
+<footer>
+<p>ClipPrompt — video reverse prompt builder. Preview build: no sign-up, no video leaves your browser. Live reverse analysis arrives with the full version.</p>
+<p>Operated by ShuoHang Wu (吴铄航). Contact: <a href="mailto:peter.12312367@gmail.com">peter.12312367@gmail.com</a></p>
+<p><a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a> · <a href="/acceptable-use">Acceptable Use Policy</a> · <a href="/about">About</a></p>
+</footer>
+
+</div>
+<script>
+var fileInput = document.getElementById('videoFile');
+var preview = document.getElementById('videoPreview');
+var meta = document.getElementById('fileMeta');
+fileInput.addEventListener('change', function(){
+  var f = fileInput.files && fileInput.files[0];
+  if(!f){ preview.style.display = 'none'; meta.textContent = ''; return; }
+  preview.src = URL.createObjectURL(f);
+  preview.style.display = 'block';
+  preview.onloadedmetadata = function(){
+    var d = preview.duration;
+    meta.textContent = 'Selected: ' + f.name + ' (' + (f.size/1048576).toFixed(1) + ' MB' + (isFinite(d) ? ', ' + d.toFixed(1) + 's' : '') + ') — preview only, kept in your browser.';
+  };
+});
+document.getElementById('reverseBtn').addEventListener('click', function(){
+  var n = document.getElementById('reverseNotice');
+  n.style.display = 'block';
+  n.scrollIntoView({behavior:'smooth', block:'center'});
+});
+document.getElementById('exampleBtn').addEventListener('click', function(){
+  document.getElementById('example').scrollIntoView({behavior:'smooth'});
+});
+document.getElementById('copyBtn').addEventListener('click', function(){
+  var t = document.getElementById('promptOut').textContent;
+  var msg = document.getElementById('copyMsg');
+  function done(){ msg.textContent = 'Copied!'; setTimeout(function(){ msg.textContent=''; }, 2000); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(done, function(){ fallback(); });
+  } else { fallback(); }
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = t; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch(e){ msg.textContent = 'Copy failed — select the text manually.'; }
+    document.body.removeChild(ta);
+  }
+});
+document.getElementById('dlBtn').addEventListener('click', function(){
+  var t = document.getElementById('promptOut').textContent;
+  var blob = new Blob([t], {type:'text/plain;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'clipprompt-night-market-noodles-prompt.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+});
+</script>
+</body>
+</html>
