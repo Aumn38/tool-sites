@@ -28,6 +28,12 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px s
 #bboxRect{position:absolute;border:2px solid #e11d48;background:rgba(225,29,72,.15);display:none}
 footer{max-width:1100px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:14px}
 footer a{color:var(--accent)}@media(max-width:760px){main{grid-template-columns:1fr}h1{font-size:22px}}
+.donate{max-width:1100px;margin:24px auto;padding:16px;border:1px solid rgba(127,127,127,.35);border-radius:12px}
+.donate button{border:1px solid var(--accent);background:transparent;color:var(--accent);padding:8px 18px;border-radius:999px;cursor:pointer}
+#donateModal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+#donateModal[hidden]{display:none}
+#donateModal .box{background:#fff;color:#111;max-width:520px;padding:20px;border-radius:12px}
+#donateModal .box a{color:#0b5fff}
 </style>
 </head>
 <body>
@@ -124,12 +130,17 @@ footer a{color:var(--accent)}@media(max-width:760px){main{grid-template-columns:
 <p class="sub">本地示例、非模型生成：主体“女孩在海边奔跑”＋黄金时刻＋电影感，会生成类似 “A girl running on the seaside, golden hour light, cinematic style” 的提示词。</p>
 </section>
 </main>
+<section class="donate">
+<h2>支持作者</h2>
+<p>全部核心功能永久免费，打赏不解锁任何功能、不影响使用，纯属自愿支持。</p>
+<button type="button" onclick="openDonate()">打赏支持</button>
+</section>
 <footer>
 <p>姊妹站：
 <a href="https://ideogram45.qqbridge.workers.dev/">Ideogram 4.5 Prompt Builder</a> ·
 <a href="https://flux3klein.qqbridge.workers.dev/">FLUX 3 Klein Prompt Builder</a> ·
 <a href="https://clipprompt.kill-bill.de5.net/">ClipPrompt</a>
-（以上仅为页脚导航文字链接，不是运行时依赖。）</p>
+（以上仅为页脚导航文字链接，不是运行时依赖。） · <a href="#" onclick="openDonate();return false;">打赏支持</a></p>
 <p>本站不调用 AI 模型、不收集、不上传用户输入；模板与配置只保存在本机浏览器 localStorage 中。</p>
 </footer>
 <script>
@@ -416,6 +427,19 @@ $("importFile").addEventListener("change", function(){
   } catch(e) {}
   refreshTemplateList(); syncEditFields(); renderStepsList(); drawBBox(); render();
 })();
+</script>
+<div id="donateModal" hidden>
+<div class="box">
+<h2>打赏支持</h2>
+<p>本站全部核心功能永久免费，打赏不解锁任何功能，也不会影响使用，纯属自愿支持作者继续维护这三个工具站。</p>
+<p>支付通过作者的 Creem 店铺完成：<a href="https://creem.io/ctrl" target="_blank" rel="noopener">去 Creem 店铺支持作者</a>。注意：店铺复审尚未通过，结账可能暂时不可用，如遇结账失败请稍后再试；专门的打赏产品上线后，这里会换成直接的打赏产品链接。</p>
+<button type="button" onclick="closeDonate()">关闭</button>
+</div>
+</div>
+<script>
+function openDonate(){document.getElementById("donateModal").hidden=false;}
+function closeDonate(){document.getElementById("donateModal").hidden=true;}
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeDonate();}});
 </script>
 </body>
 </html>
