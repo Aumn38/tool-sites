@@ -1,378 +1,406 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ideogram 4.5 Prompt Builder | 本地提示词工作台</title>
+<meta name="description" content="本地规则提示词工作台：中文输入，生成英文 Ideogram 提示词。不调用任何 AI 模型。">
 <meta name="google-site-verification" content="fWZOyCIfCth5cZqTbJjaUXBtl6xDfTnVt5WJs4gEsv8">
-<title>Ideogram 4.5 Prompt Builder — Free Prompt Generator for Posters, Menus & Packaging</title>
-<meta name="description" content="Free Ideogram 4.5 prompt builder. Assemble precise prompts with exact text, brand colors and layout — plus precision edit instructions for Ideogram 4.5's multi-turn editing. No sign-up.">
-<link rel="canonical" href="https://ideogram45.qqbridge.workers.dev/">
-<meta property="og:title" content="Ideogram 4.5 Prompt Builder">
-<meta property="og:description" content="Build precise Ideogram 4.5 prompts with exact text, colors and layout. Free, no sign-up.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://ideogram45.qqbridge.workers.dev/">
-<meta name="twitter:card" content="summary">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
-{"@type":"Question","name":"What is Ideogram 4.5?","acceptedAnswer":{"@type":"Answer","text":"Ideogram 4.5 is Ideogram's image model released on September 30, 2026. Its headline feature is precise multi-turn editing: you can change one specified part of an image — a headline, a color, a product — while the rest of the image stays intact across many consecutive edit rounds, at native 2K resolution."}},
-{"@type":"Question","name":"How do I write a good Ideogram 4.5 prompt?","acceptedAnswer":{"@type":"Answer","text":"Name the design type first (poster, menu, packaging), describe the subject, put every piece of in-image text in quotation marks in reading order, state your brand colors as hex values, and describe the layout. For edits, name exactly one change per turn and list what must stay unchanged."}},
-{"@type":"Question","name":"Should I turn Magic Prompt off for text designs?","acceptedAnswer":{"@type":"Answer","text":"Yes, if the exact wording matters. Magic Prompt rewrites and expands your prompt, which can alter or drop your carefully quoted text. For menus, posters and packaging with exact copy, keep Magic Prompt off and write the full description yourself — this builder does that for you."}},
-{"@type":"Question","name":"How much does Ideogram 4.5 cost?","acceptedAnswer":{"@type":"Answer","text":"Pricing is per image across four quality tiers, reported from 0.8 cents at the economy tier to 22 cents at the top tier. A practical workflow is to iterate drafts at the lowest tier and render only the final keeper at maximum quality."}},
-{"@type":"Question","name":"What is Zoom Editing in Ideogram 4.5?","acceptedAnswer":{"@type":"Answer","text":"Zoom Editing lets you edit a small region of a large image at its full original resolution — Ideogram demonstrated it on a 4,016 × 6,016 pixel source — and stitches the crop back seamlessly, so fine details like a logo or fabric texture can be refined without softening the rest of the image."}}
-]}
-</script>
 <style>
-:root{--bg:#0e1116;--panel:#171c24;--panel2:#1e2530;--line:#2a3342;--txt:#e8edf4;--dim:#9aa7b8;--acc:#ffb454;--acc2:#5ec8d8;--ok:#41d19a;--radius:14px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
-a{color:var(--acc2)}
-.wrap{max-width:980px;margin:0 auto;padding:0 18px}
-header{padding:44px 0 8px;text-align:center}
-header h1{font-size:2rem;line-height:1.2}
-header h1 span{color:var(--acc)}
-header p{color:var(--dim);max-width:640px;margin:12px auto 0}
-.badges{margin:16px 0 4px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.badge{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;padding:3px 12px;font-size:.8rem}
-.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:26px 0}
-.tabs{display:flex;gap:8px;margin-bottom:18px}
-.tab{flex:1;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font-size:1rem;cursor:pointer}
-.tab.active{background:var(--acc);color:#1a1206;border-color:var(--acc);font-weight:700}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:700px){.grid{grid-template-columns:1fr}}
-.field label{display:block;font-size:.83rem;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:.02em}
-.field input[type=text],.field select,.field textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px 11px;font-size:.95rem;font-family:inherit}
-.field textarea{min-height:64px;resize:vertical}
-.field.full{grid-column:1/-1}
-.textline{display:flex;gap:8px;margin-bottom:8px}
-.textline input[type=text]{flex:1}
-.textline select{width:128px;flex:none}
-.mini-btn{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
-.mini-btn:hover{color:var(--txt);border-color:var(--acc2)}
-.colors{display:flex;gap:10px}
-.colorbox{flex:1}
-.colorbox input[type=color]{width:100%;height:40px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;cursor:pointer}
-.colorbox input[type=text]{margin-top:6px;text-align:center;font-size:.85rem}
-.checks{display:flex;flex-wrap:wrap;gap:8px}
-.checks label{display:flex;gap:6px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:.87rem;color:var(--txt);cursor:pointer;font-weight:400;margin:0}
-.presets{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 16px}
-.presets span{color:var(--dim);font-size:.87rem;align-self:center}
-.outbox{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px}
-.outhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.outhead h3{font-size:1rem}
-.fmt{display:flex;gap:6px}
-.fmt button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
-.fmt button.active{color:#1a1206;background:var(--acc2);border-color:var(--acc2);font-weight:700}
-#output{width:100%;background:#0a0d11;border:1px solid var(--line);border-radius:10px;color:#d7f0e4;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9rem;min-height:130px;white-space:pre-wrap;word-break:break-word;margin-top:12px}
-.copyrow{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
-#copyBtn{background:var(--acc);color:#1a1206;border:none;border-radius:10px;padding:12px 26px;font-size:1rem;font-weight:700;cursor:pointer}
-#copyBtn:hover{filter:brightness(1.08)}
-.chars{color:var(--dim);font-size:.83rem}
-.tip{background:#14202b;border:1px solid #20455a;border-radius:10px;padding:11px 14px;color:#bfe3f2;font-size:.88rem;margin-top:14px}
-section.content{margin:38px 0}
-section.content h2{font-size:1.35rem;margin-bottom:12px}
-section.content h2 span{color:var(--acc)}
-section.content p,section.content li{color:#c6d0dd}
-section.content ul{padding-left:20px}
-section.content li{margin:5px 0}
-.example{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin:12px 0}
-.example h3{font-size:1rem;margin-bottom:6px;color:var(--acc2)}
-.example p{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86rem;color:#d7f0e4;white-space:pre-wrap}
-.example button{margin-top:10px}
-details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin:9px 0}
-details summary{cursor:pointer;font-weight:600}
-details p{margin-top:8px;color:#c6d0dd}
-
-.fb{max-width:640px;margin:38px auto 0;text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
-.fb h3{margin:0 0 6px;font-size:1rem}
-.fb p{margin:0 0 12px;color:var(--dim);font-size:.88rem}
-.fb textarea,.fb input[type=text]{width:100%;box-sizing:border-box;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:8px;color:inherit;padding:9px 11px;font:inherit;margin-bottom:10px}
-.fb button{background:#0f766e;color:#fff;border:0;border-radius:8px;padding:9px 18px;font:inherit;cursor:pointer}
-.fb button:disabled{opacity:.55;cursor:default}
-.fb .st{margin-left:12px;font-size:.88rem;color:var(--dim)}
-footer{border-top:1px solid var(--line);margin-top:44px;padding:22px 0 34px;color:var(--dim);font-size:.85rem;text-align:center}
-.hidden{display:none}
+:root{--accent:#7c5cff;--bg:#f4f4f8;--panel:#ffffff;--text:#1c1c28;--muted:#66667a;--border:#dddde8;--input:#ffffff}
+[data-theme="dark"]{--bg:#12121a;--panel:#1c1c28;--text:#f0f0f6;--muted:#a5a5b8;--border:#33334a;--input:#26263a}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+header{max-width:1100px;margin:0 auto;padding:24px 16px 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between}
+h1{margin:0;font-size:26px}h2{font-size:17px;margin:20px 0 8px}.sub{color:var(--muted);margin:4px 0}
+.notice{border:1px solid var(--accent);border-left:6px solid var(--accent);background:var(--panel);padding:10px 14px;border-radius:8px;max-width:1100px;margin:8px auto}
+main{max-width:1100px;margin:0 auto;padding:8px 16px 32px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
+label{display:block;font-weight:600;margin:12px 0 4px}input[type="text"],input[type="number"],select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;background:var(--input);color:var(--text);font-size:15px}
+textarea{min-height:64px;resize:vertical}fieldset{border:1px solid var(--border);border-radius:8px;margin:12px 0;padding:0 12px 12px}
+legend{font-weight:700;padding:0 6px}.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{padding:9px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:14px;cursor:pointer}
+button.secondary{background:transparent;color:var(--accent)}button:active{transform:translateY(1px)}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;min-height:90px;font-size:14px}
+.warn{background:#fff3cd;color:#664d03;border:1px solid #ffecb5;border-radius:8px;padding:10px;margin-top:10px}
+.err{background:#fdecea;color:#842029;border:1px solid #f5c2c7;border-radius:8px;padding:10px;margin-top:10px}
+.ok{background:#e6f4ea;color:#14532d;border:1px solid #b7e0c0;border-radius:8px;padding:10px;margin-top:10px}
+footer{max-width:1100px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:14px}
+footer a{color:var(--accent)}@media(max-width:760px){main{grid-template-columns:1fr}h1{font-size:22px}}
 </style>
 </head>
 <body>
-<div class="wrap">
 <header>
-<h1>Ideogram 4.5 <span>Prompt Builder</span></h1>
-<p>Assemble precise prompts for Ideogram 4.5 — exact in-image text, brand colors, layout and hierarchy for posters, menus and packaging, plus precision edit instructions for multi-turn editing. Free, no sign-up, nothing leaves your browser.</p>
-<div class="badges"><span class="badge">For Ideogram 4.5 (Sep 30, 2026)</span><span class="badge">Create + Edit modes</span><span class="badge">Natural &amp; JSON output</span></div>
+<div><h1>Ideogram 4.5 Prompt Builder</h1><p class="sub">中文输入，生成英文提示词。本地规则工作台，专长海报与画面文字。</p></div>
+<button id="themeBtn" type="button">切换深色 / 浅色</button>
 </header>
-
-<div class="tool">
-<div class="tabs">
-<button class="tab active" id="tabCreate" onclick="switchMode('create')">✏️ Create a design</button>
-<button class="tab" id="tabEdit" onclick="switchMode('edit')">🎯 Precision edit</button>
+<div class="notice"><strong>明示：</strong>本站是本地规则 / 模板生成器，<strong>不调用任何 AI 模型</strong>，不需要 API Key、不登录、不上传数据。所有英文输出均由本地词典与模板组合生成。</div>
+<main>
+<section class="panel" aria-label="编辑区">
+<h2>1. 模式与场景</h2>
+<label><input type="radio" name="mode" value="create" checked> Create（新建提示词）</label>
+<label><input type="radio" name="mode" value="edit"> Precision Edit（精准修改：只改指定部分，其余保持不变）</label>
+<label for="sceneTemplate">场景模板</label>
+<select id="sceneTemplate">
+<option value="">不使用场景模板</option>
+<option value="poster">海报</option><option value="ad">广告</option><option value="product">产品摄影</option>
+<option value="portrait">人物摄影</option><option value="illustration">插画</option><option value="logo">Logo</option>
+<option value="social">社交媒体图片</option>
+</select>
+<label for="styleTemplate">风格模板库</label>
+<select id="styleTemplate">
+<option value="">不使用风格模板</option>
+<option value="minimal">极简现代</option><option value="retro">复古海报</option><option value="cyberpunk">赛博朋克</option>
+<option value="watercolor">水彩插画</option><option value="ink">水墨东方</option><option value="threed">3D 渲染</option>
+<option value="flat">扁平插画</option><option value="photo">写实摄影</option>
+</select>
+<h2>2. 画面模块</h2>
+<label for="subject">主体（中文，可自由输入）</label>
+<input id="subject" type="text" placeholder="例如：一只橘猫、一杯咖啡">
+<label for="scene">场景（中文，可自由输入）</label>
+<input id="scene" type="text" placeholder="例如：雨后的城市街道、明亮的书房">
+<label for="composition">构图方式</label>
+<select id="composition">
+<option value="centered composition">居中构图</option><option value="rule of thirds composition">三分法构图</option>
+<option value="symmetrical composition">对称构图</option><option value="diagonal composition">对角线构图</option>
+<option value="close-up composition">特写构图</option><option value="wide shot composition">远景构图</option>
+</select>
+<label for="camera">镜头</label>
+<select id="camera">
+<option value="eye-level shot">平视镜头</option><option value="low-angle shot">低角度镜头</option>
+<option value="high-angle shot">高角度镜头</option><option value="overhead shot">俯视镜头</option>
+<option value="macro shot">微距镜头</option>
+</select>
+<label for="lighting">光线</label>
+<select id="lighting">
+<option value="soft daylight">柔和日光</option><option value="golden hour light">黄金时刻光线</option>
+<option value="studio lighting">影棚灯光</option><option value="neon light">霓虹灯光</option>
+<option value="warm indoor light">暖色室内光</option><option value="dramatic rim light">戏剧性轮廓光</option>
+</select>
+<label for="material">材质</label>
+<select id="material">
+<option value="">不指定</option><option value="glossy ceramic">亮面陶瓷</option><option value="matte metal">哑光金属</option>
+<option value="soft fabric">柔软织物</option><option value="transparent glass">透明玻璃</option><option value="rough paper texture">粗糙纸面质感</option>
+</select>
+<label for="color">色彩</label>
+<select id="color">
+<option value="">不指定</option><option value="warm color palette">暖色调</option><option value="cool color palette">冷色调</option>
+<option value="pastel color palette">马卡龙粉彩</option><option value="high-contrast black and white">高对比黑白</option>
+<option value="vivid saturated colors">鲜艳饱和色彩</option>
+</select>
+<label for="detail">细节程度</label>
+<select id="detail">
+<option value="clean and simple, minimal details">简洁，细节少</option>
+<option value="balanced details">适中细节</option>
+<option value="highly detailed, intricate details">高度精细，细节丰富</option>
+</select>
+<label for="aspect">画幅比例</label>
+<select id="aspect">
+<option value="1:1 square">1:1 方形</option><option value="3:2 landscape">3:2 横幅</option>
+<option value="16:9 widescreen">16:9 宽屏</option><option value="9:16 vertical">9:16 竖幅</option>
+<option value="4:5 portrait">4:5 竖幅</option>
+</select>
+<fieldset><legend>3. 文字渲染模块（Ideogram 强项）</legend>
+<label for="textContent">画面文字内容（请直接写要出现在画面上的文字，英文最稳妥）</label>
+<input id="textContent" type="text" placeholder="例如：SUMMER SALE">
+<label for="fontStyle">字体风格</label>
+<select id="fontStyle">
+<option value="bold sans-serif typography">粗体无衬线字体</option><option value="elegant serif typography">优雅衬线字体</option>
+<option value="handwritten script typography">手写体</option><option value="retro poster typography">复古海报字体</option>
+<option value="minimal modern typography">极简现代字体</option>
+</select>
+<label for="textPosition">排版位置</label>
+<select id="textPosition">
+<option value="centered at the top">顶部居中</option><option value="centered in the middle">画面中央</option>
+<option value="at the bottom">底部</option><option value="upper left corner">左上角</option>
+</select>
+<label for="headingLevel">标题层级</label>
+<select id="headingLevel">
+<option value="one large headline with a small subtitle">一个大标题加小副标题</option>
+<option value="single headline only">只有一个标题</option>
+<option value="headline with three short lines">标题加三行短文字</option>
+</select>
+<label><input id="textAccuracy" type="checkbox" checked> 文字准确性提示：要求拼写完全一致，不多字、不漏字、不改字母</label>
+</fieldset>
+<fieldset id="editFields" hidden><legend>Precision Edit 修改目标</legend>
+<label for="editTarget">修改对象（中文）</label><input id="editTarget" type="text" placeholder="例如：标题文字、背景颜色">
+<label for="editAction">修改动作</label>
+<select id="editAction"><option value="replace">替换</option><option value="add">添加</option><option value="remove">删除</option><option value="enlarge">放大</option><option value="change color of">改颜色</option></select>
+<label for="editDetail">改成什么（中文或英文）</label><input id="editDetail" type="text" placeholder="例如：蓝色、更大">
+</fieldset>
+<label for="negative">负面约束 / 排除元素（中文，逗号分隔）</label>
+<input id="negative" type="text" placeholder="例如：水印、多余的手指、模糊">
+<div class="row">
+<button id="randomBtn" type="button">随机灵感</button>
+<button id="resetBtn" type="button" class="secondary">重置默认</button>
 </div>
-
-<!-- CREATE MODE -->
-<div id="modeCreate">
-<div class="presets"><span>Try a preset:</span>
-<button class="mini-btn" onclick="preset('menu')">☕ Café menu board</button>
-<button class="mini-btn" onclick="preset('poster')">🧴 Product ad poster</button>
-<button class="mini-btn" onclick="preset('book')">📕 Book cover</button>
+<h2>4. 我的模板（只存本机浏览器）</h2>
+<label for="templateName">模板名称</label><input id="templateName" type="text" placeholder="例如：海报常用">
+<div class="row">
+<button id="saveTemplateBtn" type="button">保存当前为模板</button>
+<button id="exportBtn" type="button" class="secondary">导出 JSON</button>
+<button id="importBtn" type="button" class="secondary">导入 JSON</button>
+<input id="importFile" type="file" accept=".json,application/json" hidden>
 </div>
-<div class="grid">
-<div class="field"><label>Design type</label>
-<select id="c_type">
-<option>poster</option><option>menu board</option><option>product packaging</option><option>logo</option>
-<option>social media post</option><option>book cover</option><option>flyer</option><option>business card</option>
-<option>t-shirt graphic</option><option>sticker</option><option>infographic</option><option>website hero banner</option>
-</select></div>
-<div class="field"><label>Visual style</label>
-<select id="c_style">
-<option>modern minimalist</option><option>photorealistic</option><option>flat vector illustration</option>
-<option>3D render</option><option>vintage retro</option><option>neon cyberpunk</option><option>watercolor</option>
-<option>hand-drawn</option><option>bold Swiss typographic</option><option>luxury editorial</option>
-</select></div>
-<div class="field full"><label>Subject — what is in the image?</label>
-<textarea id="c_subject" placeholder="e.g. a rustic wooden café table with a ceramic cup of latte, croissants on a plate, soft morning window light"></textarea></div>
-<div class="field full"><label>Exact text (in reading order) — roles set size &amp; placement</label>
-<div id="textLines"></div>
-<button class="mini-btn" onclick="addLine()">+ Add a line of text</button></div>
-<div class="field"><label>Brand colors</label>
-<div class="colors">
-<div class="colorbox"><input type="color" id="col1" value="#0f766e"><input type="text" id="col1hex" value="#0F766E"></div>
-<div class="colorbox"><input type="color" id="col2" value="#fff7e6"><input type="text" id="col2hex" value="#FFF7E6"></div>
-<div class="colorbox"><input type="color" id="col3" value="#ff6b57"><input type="text" id="col3hex" value="#FF6B57"></div>
-</div></div>
-<div class="field"><label>Composition / layout</label>
-<select id="c_comp">
-<option>centered composition with generous negative space</option>
-<option>rule-of-thirds layout</option>
-<option>full-bleed image with text overlaid at the top</option>
-<option>split layout, image on the left and text on the right</option>
-<option>top-down flat lay</option>
-<option>grid layout with clear sections</option>
-</select></div>
-<div class="field"><label>Mood &amp; lighting</label>
-<select id="c_mood">
-<option>warm natural daylight</option><option>soft studio lighting</option><option>dramatic evening mood</option>
-<option>bright and airy</option><option>dark and moody</option><option>golden hour glow</option>
-</select></div>
-<div class="field"><label>Aspect ratio (set this inside Ideogram)</label>
-<select id="c_aspect">
-<option>1:1 (square)</option><option>16:9 (landscape)</option><option>9:16 (portrait / story)</option>
-<option>3:2</option><option>2:3</option><option>4:5</option><option>5:4</option>
-</select></div>
-<div class="field full"><label>Background (optional)</label>
-<input type="text" id="c_bg" placeholder="e.g. blurred café interior, shallow depth of field"></div>
-<div class="field full"><label>Avoid (optional)</label>
-<input type="text" id="c_avoid" placeholder="e.g. no people, no watermark, no extra text, no distorted letters"></div>
+<label for="templateSelect">已保存的模板</label>
+<select id="templateSelect"><option value="">暂无已保存模板</option></select>
+<div class="row">
+<button id="loadTemplateBtn" type="button" class="secondary">载入选中模板</button>
+<button id="deleteTemplateBtn" type="button" class="secondary">删除选中模板</button>
 </div>
-</div>
-
-<!-- EDIT MODE -->
-<div id="modeEdit" class="hidden">
-<div class="grid">
-<div class="field"><label>Edit category (Ideogram 4.5's ten precision edits)</label>
-<select id="e_cat">
-<option>in-image text modification</option><option>color and lighting correction</option>
-<option>product photography change</option><option>interior design change</option>
-<option>architecture change</option><option>photo restoration</option>
-<option>sketch to image</option><option>style reference application</option>
-<option>reframe / aspect change</option><option>object removal or swap</option>
-</select></div>
-<div class="field"><label>Edit round (multi-turn)</label>
-<select id="e_turn"><option>first edit</option><option>second edit</option><option>third edit</option><option>later edit in a long chain</option></select></div>
-<div class="field full"><label>Change exactly this</label>
-<textarea id="e_change" placeholder="e.g. change the headline price from $12 to $9 and make the headline text coral red"></textarea></div>
-<div class="field full"><label>Keep unchanged</label>
-<div class="checks" id="keepChecks">
-<label><input type="checkbox" value="the subject and its position" checked> subject &amp; position</label>
-<label><input type="checkbox" value="all other text, its wording, fonts and placement" checked> other text</label>
-<label><input type="checkbox" value="the color palette" checked> colors</label>
-<label><input type="checkbox" value="the layout and composition"> layout</label>
-<label><input type="checkbox" value="the background"> background</label>
-<label><input type="checkbox" value="the lighting and shadows"> lighting</label>
-<label><input type="checkbox" value="people's faces and features"> faces</label>
-</div></div>
-<div class="field full"><label><input type="checkbox" id="e_zoom"> Zoom Editing — apply at full original resolution and blend edges seamlessly</label></div>
-</div>
-</div>
-
-<div class="outbox">
-<div class="outhead"><h3>Your prompt</h3>
-<div class="fmt" id="fmtRow">
-<button id="fmtNat" class="active" onclick="setFmt('nat')">Natural language</button>
-<button id="fmtJson" onclick="setFmt('json')">Structured JSON</button>
-</div></div>
-<div id="output"></div>
-<div class="copyrow">
-<button id="copyBtn" onclick="copyOut()">📋 Copy prompt</button>
-<span class="chars" id="charCount"></span>
-<span class="chars" id="settingHint"></span>
-</div>
-<div class="tip" id="tipBox">💡 <b>Tip:</b> turn <b>Magic Prompt OFF</b> in Ideogram when your design carries exact text — it rewrites prompts and can change your wording.</div>
-</div>
-</div>
-
-<section class="content">
-<h2>What is <span>Ideogram 4.5</span>?</h2>
-<p>Ideogram 4.5, released on <b>September 30, 2026</b>, is Ideogram's most precise image editing model. Earlier models regenerate the whole picture on every edit, so faces shift, text warps and quality erodes round after round — a failure Ideogram calls <i>drift</i>. Version 4.5 is built to confine each change to exactly the region you specify and keep untouched elements stable across long edit chains, at native 2K resolution. Ideogram also announced distribution partnerships with Picsart, Runway, Pika and Leonardo AI, and pricing runs across four quality tiers reported from 0.8¢ to 22¢ per image.</p>
-<p>That precision only pays off if your instructions are precise too. A vague prompt makes the model guess; a structured prompt — design type, subject, exact quoted text in reading order, hex colors, layout — leaves nothing to chance. That is what the builder above assembles for you.</p>
-<h3>Ideogram 4.5 vs Ideogram 4.0</h3>
-<table style="border-collapse:collapse;width:100%;margin:12px 0">
-<tr><th style="border:1px solid #ccc;padding:6px 8px;text-align:left"></th><th style="border:1px solid #ccc;padding:6px 8px;text-align:left">Ideogram 4.0</th><th style="border:1px solid #ccc;padding:6px 8px;text-align:left">Ideogram 4.5</th></tr>
-<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Built for</b></td><td style="border:1px solid #ccc;padding:6px 8px">Generating images with accurate text</td><td style="border:1px solid #ccc;padding:6px 8px">Editing an image over many rounds</td></tr>
-<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Untouched areas</b></td><td style="border:1px solid #ccc;padding:6px 8px">Re-rendered with each change</td><td style="border:1px solid #ccc;padding:6px 8px">Copied exactly from the source</td></tr>
-<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Control inputs</b></td><td style="border:1px solid #ccc;padding:6px 8px">Layout boxes and a 16-color palette</td><td style="border:1px solid #ccc;padding:6px 8px">A mask plus up to 4 reference images</td></tr>
-<tr><td style="border:1px solid #ccc;padding:6px 8px"><b>Text</b></td><td style="border:1px solid #ccc;padding:6px 8px">Renders new text</td><td style="border:1px solid #ccc;padding:6px 8px">Rewrites or translates existing text, keeping its lettering</td></tr>
-</table>
-<p>4.5 also adds native 2K output, Zoom Editing (a full-resolution region edit, demonstrated on a 4,016 × 6,016 px source), and four quality tiers reported from 0.8¢ to 22¢ per image.</p>
 </section>
-
-<section class="content">
-<h2>How to write a good <span>Ideogram 4.5</span> prompt</h2>
-<ul>
-<li><b>Lead with the design type.</b> "A menu board…", "Product packaging…" — the first words set the model's whole layout logic.</li>
-<li><b>Quote every word that must appear.</b> Text in quotation marks is treated as literal copy. List lines in reading order and give each a role (headline, price, call-to-action) so size and placement come out right.</li>
-<li><b>Use hex codes for brand colors.</b> "Teal" is a guess; #0F766E is an instruction.</li>
-<li><b>One change per edit turn.</b> 4.5's strength is multi-turn editing — spend it wisely. Change the headline, check it, then change the background. Bundling five changes into one turn brings drift back.</li>
-<li><b>Say what stays.</b> In every edit, explicitly list what must remain unchanged: other text, faces, palette, layout.</li>
-<li><b>Draft cheap, render once.</b> Iterate at the lowest quality tier, then render only the final keeper at top quality.</li>
-<li><b>Turn Magic Prompt off for exact text.</b> It expands and rewrites prompts — great for vague ideas, risky for menus and packaging.</li>
-</ul>
+<section class="panel" aria-label="输出区">
+<h2>实时英文预览</h2>
+<h3>结构化提示词</h3><pre id="structuredOut"></pre>
+<button id="copyStructuredBtn" type="button">复制结构化提示词</button>
+<h3>完整提示词</h3><pre id="fullOut"></pre>
+<button id="copyFullBtn" type="button">复制完整提示词</button>
+<div id="warnBox" class="warn" hidden></div>
+<div id="errorBox" class="err" hidden></div>
+<div id="statusBox" class="ok" hidden></div>
+<p class="sub">本地示例、非模型生成：主体“橘猫在书房”＋暖光＋居中构图，会生成类似 “An orange cat in a study, warm indoor light, centered composition” 的英文提示词，供你对照格式使用。</p>
 </section>
-
-<section class="content">
-<h2>Example prompts <span>(copy &amp; adapt)</span></h2>
-<div class="example"><h3>☕ Café menu board</h3>
-<p id="ex1">A modern minimalist menu board design featuring a rustic café chalkboard on a warm cream wall. The text reads, in order: "MORNING BREW CAFÉ" (large headline at the top), "Fresh Croissants — $4" (menu item line), "Oat Latte — $5" (menu item line), "Open daily 7:00–19:00" (small footer text). Color palette: deep teal (#0F766E), warm cream (#FFF7E6), accent coral (#FF6B57). Composition: centered composition with generous negative space. Mood and lighting: warm natural daylight. Avoid: no people, no watermark, no extra text, no distorted letters.</p>
-<button class="mini-btn" onclick="copyText('ex1')">📋 Copy</button></div>
-<div class="example"><h3>🧴 Skincare product ad</h3>
-<p id="ex2">A luxury editorial poster design featuring a frosted glass serum bottle on wet stone beside green leaves, water droplets on the surface. The text reads, in order: "LUMIÈRE" (large headline at the top), "Vitamin C Serum" (subheadline), "Glow in 14 days" (call-to-action near the bottom). Color palette: sage green (#9CAF88), ivory (#FFFFF0), charcoal (#36454F). Composition: rule-of-thirds layout. Mood and lighting: soft studio lighting. Background: soft gradient, subtle mist. Avoid: no hands, no watermark, no extra text.</p>
-<button class="mini-btn" onclick="copyText('ex2')">📋 Copy</button></div>
-<div class="example"><h3>🎯 Multi-turn edit (turn 2)</h3>
-<p id="ex3">Edit this image (in-image text modification): change the headline price from "$12" to "$9" and set the headline text color to coral red (#FF6B57). This is the second edit in a multi-turn session — apply only this change. Keep unchanged: the subject and its position; all other text, its wording, fonts and placement; the background; the lighting and shadows. Preserve the original resolution and fine detail in all unedited areas.</p>
-<button class="mini-btn" onclick="copyText('ex3')">📋 Copy</button></div>
-<div class="example"><h3>🔁 Multi-turn chain (turn 1 → 2 → 3)</h3>
-<p>Start from the café menu board above, then run one change per turn. Each turn names what stays, so nothing else moves.</p>
-<p id="ex4a"><b>Turn 2:</b> Edit this image (in-image text modification): change "Oat Latte — $5" to "Oat Latte — $6". Apply only this change. Keep unchanged: all other text, its wording, fonts and placement; the colors; the background; the lighting. Preserve the original resolution and fine detail in all unedited areas.</p>
-<button class="mini-btn" onclick="copyText('ex4a')">📋 Copy turn 2</button>
-<p id="ex4b"><b>Turn 3:</b> Edit this image (in-image text modification): change the footer text from "Open daily 7:00–19:00" to "Open daily 8:00–20:00". Apply only this change. Keep unchanged: all other text, its wording, fonts and placement; the colors; the background; the lighting. Preserve the original resolution and fine detail in all unedited areas.</p>
-<button class="mini-btn" onclick="copyText('ex4b')">📋 Copy turn 3</button></div>
-</section>
-
-<section class="content">
-<h2>Frequently asked questions</h2>
-<details><summary>What is Ideogram 4.5?</summary><p>Ideogram's image model released September 30, 2026, focused on precise multi-turn editing: change one specified part of an image while the rest stays intact across consecutive edits, at native 2K resolution.</p></details>
-<details><summary>How much does Ideogram 4.5 cost?</summary><p>Per-image pricing across four quality tiers, reported from 0.8¢ (economy) to 22¢ (top tier). Iterate drafts cheaply and render the final at top quality.</p></details>
-<details><summary>Should I turn Magic Prompt off?</summary><p>Yes when exact text matters. Magic Prompt rewrites your prompt, which can alter quoted copy. For menus, posters and packaging, keep it off and use a fully written prompt.</p></details>
-<details><summary>What is Zoom Editing?</summary><p>Editing a small region at the image's full original resolution — demonstrated on a 4,016 × 6,016 px source — then stitching it back seamlessly. Ideal for logos, labels and fabric detail.</p></details>
-<details><summary>Is this tool affiliated with Ideogram?</summary><p>No. This is an independent, free prompt-building tool for people who use Ideogram 4.5. Ideogram is a trademark of Ideogram Inc.</p></details>
-</section>
-
-<section class="fb" id="feedback">
-<h3>Found a bug, or have a suggestion?</h3>
-<p>Tell us what went wrong or what would make this tool better. Only sent when you tap the button.</p>
-<textarea id="f_msg" rows="3" maxlength="2000" placeholder="Describe the problem or idea..."></textarea>
-<input type="text" id="f_contact" maxlength="120" placeholder="Email (optional, if you want a reply)">
-<input type="text" id="f_hp" autocomplete="off" style="display:none">
-<button id="f_send" type="button">Send feedback</button><span class="st" id="f_status"></span>
-</section>
+</main>
 <footer>
-<p>Ideogram 4.5 Prompt Builder — an independent free tool. Not affiliated with Ideogram Inc.<br>
-Prompts are generated locally in your browser; nothing you type is sent anywhere.</p>
-<p style="margin-top:10px">More free prompt builders: <a href="https://flux3klein.qqbridge.workers.dev/">FLUX 3 Klein Prompt Builder</a> — upsampler-style captions &amp; bounding-box JSON for Black Forest Labs' open-weights model. · <a href="https://clipprompt.kill-bill.de5.net/">ClipPrompt</a> — turn a video into the prompt that could have made it.</p>
+<p>姊妹站：
+<a href="https://ideogram45.qqbridge.workers.dev/">Ideogram 4.5 Prompt Builder</a> ·
+<a href="https://flux3klein.qqbridge.workers.dev/">FLUX 3 Klein Prompt Builder</a> ·
+<a href="https://clipprompt.kill-bill.de5.net/">ClipPrompt</a>
+（以上仅为页脚导航文字链接，不是运行时依赖。）</p>
+<p>本站不调用 AI 模型、不收集、不上传用户输入；模板与配置只保存在本机浏览器 localStorage 中。</p>
 </footer>
-</div>
-
 <script>
-let mode='create', fmt='nat';
-const $=id=>document.getElementById(id);
-const roles={headline:'large headline at the top',subheadline:'subheadline',body:'body text',menu:'menu item line',price:'price line',cta:'call-to-action near the bottom',footer:'small footer text',label:'label text'};
-function addLine(text='',role='headline'){
-  const row=document.createElement('div');row.className='textline';
-  row.innerHTML='<input type="text" placeholder="Type the exact words" value="'+text.replace(/"/g,'&quot;')+'"><select>'+
-    Object.keys(roles).map(r=>'<option value="'+r+'"'+(r===role?' selected':'')+'>'+r+'</option>').join('')+
-    '</select><button class="mini-btn" title="Remove">✕</button>';
-  row.querySelector('button').onclick=()=>{row.remove();gen();};
-  row.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',gen));
-  $('textLines').appendChild(row);
+"use strict";
+// 本地词典：把常见中文词映射为英文术语。词典查不到的中文原样保留并提示，绝不伪装翻译。
+var DICT = {
+"一只橘猫":"an orange cat","一位女孩":"a girl","一位男孩":"a boy","一杯咖啡":"a cup of coffee",
+"一只":"a","一个":"a","一位":"a","一座":"a","一辆":"a","一杯":"a","在":"in",
+"猫":"cat","橘猫":"orange cat","狗":"dog","女孩":"girl","男孩":"boy","女人":"woman","男人":"man",
+"咖啡":"coffee","咖啡杯":"coffee cup","书房":"study","城市":"city","街道":"street","海边":"seaside",
+"山":"mountain","花":"flower","汽车":"car","房子":"house","雨":"rain","雪":"snow","阳光":"sunlight",
+"夜晚":"night","白天":"daytime","春天":"spring","夏天":"summer","秋天":"autumn","冬天":"winter",
+"红色":"red","蓝色":"blue","绿色":"green","黄色":"yellow","黑色":"black","白色":"white","粉色":"pink",
+"水印":"watermark","模糊":"blurry","多余的手指":"extra fingers","变形":"distorted","低质量":"low quality",
+"标题文字":"headline text","背景颜色":"background color","蓝色":"blue","更大":"larger","文字":"text",
+"产品":"product","海报":"poster","广告":"advertisement","人物":"person","风景":"landscape","建筑":"building"
+};
+// 场景模板：中文场景名映射为英文场景描述片段。
+var SCENE_TEXT = {"poster":"poster design","ad":"advertising image","product":"product photography",
+"portrait":"portrait photography","illustration":"illustration","logo":"logo design","social":"social media image"};
+// 风格模板：中文风格名映射为英文风格描述片段。
+var STYLE_TEXT = {"minimal":"minimal modern style","retro":"retro poster style","cyberpunk":"cyberpunk style",
+"watercolor":"watercolor illustration style","ink":"ink wash oriental style","threed":"3D render style",
+"flat":"flat illustration style","photo":"photorealistic photography style"};
+var LS_STATE = "ideogram45-state-v2", LS_THEME = "ideogram45-theme-v2", LS_TEMPLATES = "ideogram45-templates-v2";
+function $(id){ return document.getElementById(id); }
+function show(el, msg){ el.textContent = msg; el.hidden = false; }
+function hide(el){ el.hidden = true; el.textContent = ""; }
+// 翻译自由输入的中文：按词典从长词到短词替换，剩余中文收集为缺失词并返回。
+function translateFree(text){
+  var out = (text || "").trim(), missing = [];
+  if(!out) return {en:"", missing:missing};
+  var keys = Object.keys(DICT).sort(function(a,b){ return b.length - a.length; });
+  keys.forEach(function(k){ if(out.indexOf(k) !== -1){ out = out.split(k).join(" " + DICT[k] + " "); } });
+  out = out.replace(/\s+/g, " ").trim();
+  var m = out.match(/[\u4e00-\u9fff]+/g);
+  if(m){ m.forEach(function(w){ if(missing.indexOf(w) === -1) missing.push(w); }); }
+  return {en:out, missing:missing};
 }
-function lines(){return [...$('textLines').querySelectorAll('.textline')].map(r=>({t:r.querySelector('input').value.trim(),r:r.querySelector('select').value})).filter(x=>x.t);}
-function colors(){return [$('col1hex').value,$('col2hex').value,$('col3hex').value].map(s=>s.trim().toUpperCase()).filter(s=>/^#[0-9A-F]{6}$/.test(s));}
-function syncColor(i){const c=$('col'+i);const h=$('col'+i+'hex');c.addEventListener('input',()=>{h.value=c.value.toUpperCase();gen();});h.addEventListener('input',()=>{if(/^#[0-9a-fA-F]{6}$/.test(h.value))c.value=h.value;gen();});}
-[1,2,3].forEach(syncColor);
-function natCreate(){
-  const type=$('c_type').value,style=$('c_style').value,subj=$('c_subject').value.trim();
-  let p='A '+style+' '+type+' design';
-  if(subj)p+=' featuring '+subj.replace(/\.$/,'');
-  p+='.';
-  const ls=lines();
-  if(ls.length){p+=' The text reads, in order: '+ls.map(x=>'"'+x.t+'" ('+roles[x.r]+')').join(', ')+'.';}
-  const cs=colors(); if(cs.length)p+=' Color palette: '+cs.join(', ')+'.';
-  p+=' Composition: '+$('c_comp').value+'.';
-  p+=' Mood and lighting: '+$('c_mood').value+'.';
-  const bg=$('c_bg').value.trim(); if(bg)p+=' Background: '+bg.replace(/\.$/,'')+'.';
-  const av=$('c_avoid').value.trim(); if(av)p+=' Avoid: '+av.replace(/\.$/,'')+'.';
-  return p;
+// 收集当前表单状态，用于保存、导出与刷新后恢复。
+function collectState(){
+  var mode = document.querySelector('input[name="mode"]:checked').value;
+  return {mode:mode, sceneTemplate:$("sceneTemplate").value, styleTemplate:$("styleTemplate").value,
+    subject:$("subject").value, scene:$("scene").value, composition:$("composition").value,
+    camera:$("camera").value, lighting:$("lighting").value, material:$("material").value,
+    color:$("color").value, detail:$("detail").value, aspect:$("aspect").value,
+    textContent:$("textContent").value, fontStyle:$("fontStyle").value, textPosition:$("textPosition").value,
+    headingLevel:$("headingLevel").value, textAccuracy:$("textAccuracy").checked,
+    editTarget:$("editTarget").value, editAction:$("editAction").value, editDetail:$("editDetail").value,
+    negative:$("negative").value};
 }
-function jsonCreate(){
-  const o={type:$('c_type').value,style:$('c_style').value,subject:$('c_subject').value.trim(),
-    text:lines().map(x=>({content:x.t,role:x.r})),colors:colors(),composition:$('c_comp').value,
-    mood_lighting:$('c_mood').value,background:$('c_bg').value.trim(),avoid:$('c_avoid').value.trim(),aspect_ratio:$('c_aspect').value};
-  Object.keys(o).forEach(k=>{if(o[k]===''||(Array.isArray(o[k])&&!o[k].length))delete o[k];});
-  return JSON.stringify(o,null,2);
+// 把状态写回表单。
+function applyState(s){
+  if(!s) return;
+  document.querySelectorAll('input[name="mode"]').forEach(function(r){ r.checked = (r.value === s.mode); });
+  ["sceneTemplate","styleTemplate","subject","scene","composition","camera","lighting","material","color",
+   "detail","aspect","textContent","fontStyle","textPosition","headingLevel","editTarget","editAction",
+   "editDetail","negative"].forEach(function(id){ if(s[id] !== undefined) $(id).value = s[id]; });
+  if(s.textAccuracy !== undefined) $("textAccuracy").checked = !!s.textAccuracy;
+  syncEditFields(); render();
 }
-function editPrompt(asJson){
-  const cat=$('e_cat').value,chg=$('e_change').value.trim()||'…describe the change…';
-  const keeps=[...document.querySelectorAll('#keepChecks input:checked')].map(x=>x.value);
-  const turn=$('e_turn').value, zoom=$('e_zoom').checked;
-  if(asJson){const o={task:'edit',category:cat,turn:turn,change:chg,keep_unchanged:keeps,zoom_editing:zoom};return JSON.stringify(o,null,2);}
-  let p='Edit this image ('+cat+'): '+chg.replace(/\.$/,'')+'.';
-  p+=' This is the '+turn+' in a multi-turn session — apply only this change.';
-  if(keeps.length)p+=' Keep unchanged: '+keeps.join('; ')+'.';
-  if(zoom)p+=' Apply the edit at full original resolution (Zoom Editing) and blend the edges seamlessly.';
-  p+=' Preserve the original resolution and fine detail in all unedited areas.';
-  return p;
+// 根据模式显示或隐藏精准修改字段。
+function syncEditFields(){
+  var mode = document.querySelector('input[name="mode"]:checked').value;
+  $("editFields").hidden = (mode !== "edit");
 }
-function gen(){
-  let out;
-  if(mode==='create'){out = fmt==='json'?jsonCreate():natCreate();
-    $('settingHint').textContent='⚙️ In Ideogram: aspect ratio '+$('c_aspect').value+', Magic Prompt OFF for exact text.';
-    $('tipBox').innerHTML='💡 <b>Tip:</b> turn <b>Magic Prompt OFF</b> in Ideogram when your design carries exact text — it rewrites prompts and can change your wording.';
-  }else{out=editPrompt(fmt==='json');
-    $('settingHint').textContent='⚙️ Paste this as your next message in the same Ideogram edit session.';
-    $('tipBox').innerHTML='💡 <b>Tip:</b> one change per turn. 4.5 holds detail across turns — bundling many changes into one message is what brings drift back.';
+// 生成结构化与完整提示词，并处理未收录中文的提示。
+function render(){
+  hide($("errorBox")); hide($("statusBox"));
+  var s = collectState();
+  try { localStorage.setItem(LS_STATE, JSON.stringify(s)); } catch(e) { /* 存储不可用时仍可继续生成，不阻断核心功能 */ }
+  var subject = translateFree(s.subject), scene = translateFree(s.scene), negative = translateFree(s.negative);
+  var missing = subject.missing.concat(scene.missing, negative.missing).filter(function(v,i,a){ return a.indexOf(v) === i; });
+  var lines = [];
+  lines.push("Subject: " + (subject.en || "a subject"));
+  if(scene.en) lines.push("Scene: " + scene.en);
+  if(s.sceneTemplate && SCENE_TEXT[s.sceneTemplate]) lines.push("Use case: " + SCENE_TEXT[s.sceneTemplate]);
+  if(s.styleTemplate && STYLE_TEXT[s.styleTemplate]) lines.push("Style: " + STYLE_TEXT[s.styleTemplate]);
+  lines.push("Composition: " + s.composition);
+  lines.push("Camera: " + s.camera);
+  lines.push("Lighting: " + s.lighting);
+  if(s.material) lines.push("Material: " + s.material);
+  if(s.color) lines.push("Color: " + s.color);
+  lines.push("Detail: " + s.detail);
+  lines.push("Aspect ratio: " + s.aspect);
+  if(s.textContent){
+    lines.push("On-image text: \"" + s.textContent + "\" in " + s.fontStyle + ", " + s.textPosition);
+    lines.push("Text layout: " + s.headingLevel);
+    if(s.textAccuracy) lines.push("Text accuracy: spell the on-image text exactly, no extra or missing letters");
   }
-  $('output').textContent=out;
-  $('charCount').textContent=out.length+' characters';
+  if(negative.en) lines.push("Avoid: " + negative.en);
+  var structured, full;
+  if(s.mode === "edit"){
+    var target = translateFree(s.editTarget), detail = translateFree(s.editDetail);
+    var editLine = "Precision edit: " + s.editAction + " " + (target.en || "the target") +
+      (detail.en ? " to " + detail.en : "") + ", keep everything else unchanged";
+    structured = lines.join("\n") + "\n" + editLine;
+    full = editLine + ". Original prompt base: " + lines.join(", ") + ".";
+    missing = missing.concat(target.missing, detail.missing).filter(function(v,i,a){ return a.indexOf(v) === i; });
+  } else {
+    structured = lines.join("\n");
+    var parts = [subject.en || "a subject"];
+    if(scene.en) parts.push(scene.en);
+    if(s.styleTemplate && STYLE_TEXT[s.styleTemplate]) parts.push(STYLE_TEXT[s.styleTemplate]);
+    parts.push(s.composition, s.camera, s.lighting);
+    if(s.material) parts.push(s.material);
+    if(s.color) parts.push(s.color);
+    parts.push(s.detail);
+    if(s.textContent) parts.push('with on-image text "' + s.textContent + '" in ' + s.fontStyle + ", " + s.textPosition);
+    if(negative.en) parts.push("avoid " + negative.en);
+    full = parts.join(", ") + ", aspect ratio " + s.aspect + ".";
+  }
+  $("structuredOut").textContent = structured;
+  $("fullOut").textContent = full;
+  if(missing.length){
+    show($("warnBox"), "未在本地词库中找到，已原样保留，请自行替换为英文：" + missing.join("、") + "。本站不做 AI 翻译。");
+  } else { hide($("warnBox")); }
 }
-function switchMode(m){mode=m;$('tabCreate').classList.toggle('active',m==='create');$('tabEdit').classList.toggle('active',m==='edit');$('modeCreate').classList.toggle('hidden',m!=='create');$('modeEdit').classList.toggle('hidden',m!=='edit');$('fmtRow').style.visibility='visible';gen();}
-function setFmt(f){fmt=f;$('fmtNat').classList.toggle('active',f==='nat');$('fmtJson').classList.toggle('active',f==='json');gen();}
-function copyOut(){navigator.clipboard.writeText($('output').textContent).then(()=>{const b=$('copyBtn');b.textContent='✅ Copied!';setTimeout(()=>b.textContent='📋 Copy prompt',1600);});}
-function copyText(id){navigator.clipboard.writeText($(id).textContent).then(()=>{});}
-function preset(name){
-  switchMode('create');
-  const set=(id,v)=>{$(id).value=v;};
-  if(name==='menu'){set('c_type','menu board');set('c_style','modern minimalist');set('c_subject','a rustic café chalkboard on a warm cream wall, small potted herbs on the counter below');set('c_bg','blurred café interior, shallow depth of field');set('c_avoid','no people, no watermark, no extra text, no distorted letters');setLines([['MORNING BREW CAFÉ','headline'],['Fresh Croissants — $4','menu'],['Oat Latte — $5','menu'],['Open daily 7:00–19:00','footer']]);}
-  if(name==='poster'){set('c_type','poster');set('c_style','luxury editorial');set('c_subject','a frosted glass serum bottle on wet stone beside green leaves, water droplets on the surface');$('col1').value='#9caf88';$('col1hex').value='#9CAF88';$('col2').value='#fffff0';$('col2hex').value='#FFFFF0';$('col3').value='#36454f';$('col3hex').value='#36454F';set('c_bg','soft gradient, subtle mist');set('c_avoid','no hands, no watermark, no extra text');setLines([['LUMIÈRE','headline'],['Vitamin C Serum','subheadline'],['Glow in 14 days','cta']]);}
-  if(name==='book'){set('c_type','book cover');set('c_style','bold Swiss typographic');set('c_subject','a lone lighthouse on a rocky island under a huge rising moon, deep navy sea');set('c_bg','');set('c_avoid','no author photo, no barcode, no extra text');setLines([['THE LAST LIGHT','headline'],['A Novel','subheadline'],['J. R. MARLOWE','footer']]);}
-  gen();
+// 一键复制：优先用剪贴板接口，失败时用临时文本框作为备用方案。
+function copyText(text, okMsg){
+  function done(ok){ show(ok ? $("statusBox") : $("errorBox"), ok ? okMsg : "复制失败：请手动选中上方文本复制。"); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ fallbackCopy(text, done); });
+  } else { fallbackCopy(text, done); }
 }
-function setLines(arr){$('textLines').innerHTML='';arr.forEach(x=>addLine(x[0],x[1]));}
-document.querySelectorAll('#modeCreate input,#modeCreate select,#modeCreate textarea,#modeEdit input,#modeEdit select,#modeEdit textarea').forEach(el=>el.addEventListener('input',gen));
-addLine('YOUR HEADLINE','headline');addLine('Your supporting line','subheadline');
-preset('menu');
-switchMode('create');
-
-$('f_send').addEventListener('click',async()=>{
-  const msg=$('f_msg').value.trim(), st=$('f_status'), btn=$('f_send');
-  if(msg.length<3){st.textContent='Please write a few words first.';return;}
-  btn.disabled=true; st.textContent='Sending...';
-  try{
-    const r=await fetch('/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:msg,contact:$('f_contact').value.trim(),hp:$('f_hp').value})});
-    const j=await r.json();
-    if(j.ok){st.textContent='Thanks! Feedback received.';$('f_msg').value='';$('f_contact').value='';}
-    else{st.textContent='Sorry, that did not go through. Please try again.';btn.disabled=false;}
-  }catch(e){st.textContent='Network error. Please try again.';btn.disabled=false;}
+function fallbackCopy(text, done){
+  var ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch(e) { ok = false; }
+  document.body.removeChild(ta); done(ok);
+}
+// 刷新模板下拉列表。
+function refreshTemplateList(){
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]"); } catch(e) { list = []; }
+  var sel = $("templateSelect");
+  sel.innerHTML = "";
+  if(!list.length){ var o = document.createElement("option"); o.value = ""; o.textContent = "暂无已保存模板"; sel.appendChild(o); return; }
+  list.forEach(function(t, i){
+    var o = document.createElement("option"); o.value = String(i); o.textContent = t.name; sel.appendChild(o);
+  });
+}
+// 随机灵感：从本地示例数组里随机组合，填入表单。
+function randomInspiration(){
+  var subjects = ["一只橘猫", "一杯咖啡", "一位女孩", "一座房子"];
+  var scenes = ["雨后的城市街道", "明亮的书房", "海边", "夜晚的山"];
+  var styles = ["minimal", "retro", "watercolor", "photo"];
+  $("subject").value = subjects[Math.floor(Math.random() * subjects.length)];
+  $("scene").value = scenes[Math.floor(Math.random() * scenes.length)];
+  $("styleTemplate").value = styles[Math.floor(Math.random() * styles.length)];
+  render();
+}
+// 绑定所有按钮与输入事件，保证没有空按钮。
+document.querySelectorAll("input, select, textarea").forEach(function(el){
+  el.addEventListener("input", function(){ syncEditFields(); render(); });
+  el.addEventListener("change", function(){ syncEditFields(); render(); });
 });
+$("themeBtn").addEventListener("click", function(){
+  var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem(LS_THEME, next); } catch(e) {}
+});
+$("randomBtn").addEventListener("click", randomInspiration);
+$("resetBtn").addEventListener("click", function(){
+  try { localStorage.removeItem(LS_STATE); } catch(e) {}
+  document.querySelectorAll("input[type=text], textarea").forEach(function(el){ el.value = ""; });
+  document.querySelectorAll("select").forEach(function(el){ el.selectedIndex = 0; });
+  document.querySelector('input[name="mode"][value="create"]').checked = true;
+  $("textAccuracy").checked = true; syncEditFields(); render();
+  show($("statusBox"), "已重置为默认配置。");
+});
+$("copyStructuredBtn").addEventListener("click", function(){ copyText($("structuredOut").textContent, "结构化提示词已复制。"); });
+$("copyFullBtn").addEventListener("click", function(){ copyText($("fullOut").textContent, "完整提示词已复制。"); });
+$("saveTemplateBtn").addEventListener("click", function(){
+  var name = $("templateName").value.trim();
+  if(!name){ show($("errorBox"), "保存失败：请先填写模板名称。"); return; }
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]"); } catch(e) { list = []; }
+  list.push({name:name, state:collectState(), savedAt:new Date().toISOString()});
+  try { localStorage.setItem(LS_TEMPLATES, JSON.stringify(list)); } catch(e) { show($("errorBox"), "保存失败：浏览器存储不可用。"); return; }
+  refreshTemplateList(); show($("statusBox"), "模板已保存到本机浏览器：" + name + "。");
+});
+$("loadTemplateBtn").addEventListener("click", function(){
+  var idx = $("templateSelect").value;
+  if(idx === "" || idx === null){ show($("errorBox"), "载入失败：请先选择一个已保存模板。"); return; }
+  var list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]");
+  if(!list[idx]){ show($("errorBox"), "载入失败：该模板不存在，可能已被删除。"); return; }
+  applyState(list[idx].state); show($("statusBox"), "已载入模板：" + list[idx].name + "。");
+});
+$("deleteTemplateBtn").addEventListener("click", function(){
+  var idx = $("templateSelect").value;
+  if(idx === "" || idx === null){ show($("errorBox"), "删除失败：请先选择一个已保存模板。"); return; }
+  var list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]");
+  list.splice(Number(idx), 1);
+  localStorage.setItem(LS_TEMPLATES, JSON.stringify(list));
+  refreshTemplateList(); show($("statusBox"), "已删除选中模板。");
+});
+$("exportBtn").addEventListener("click", function(){
+  var data = {site:"ideogram45", version:2, state:collectState(), templates:[], exportedAt:new Date().toISOString()};
+  try { data.templates = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]"); } catch(e) {}
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "ideogram45-templates.json"; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  show($("statusBox"), "JSON 已导出。");
+});
+$("importBtn").addEventListener("click", function(){ $("importFile").click(); });
+$("importFile").addEventListener("change", function(){
+  var file = $("importFile").files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try {
+      var data = JSON.parse(reader.result);
+      if(!data || typeof data !== "object" || !data.state) throw new Error("文件里没有可用的 state 配置");
+      applyState(data.state);
+      if(Array.isArray(data.templates)) localStorage.setItem(LS_TEMPLATES, JSON.stringify(data.templates));
+      refreshTemplateList(); show($("statusBox"), "JSON 导入成功，配置已恢复。");
+    } catch(e) { show($("errorBox"), "导入失败：文件不是有效的模板 JSON（" + e.message + "）。"); }
+    $("importFile").value = "";
+  };
+  reader.onerror = function(){ show($("errorBox"), "导入失败：无法读取该文件。"); $("importFile").value = ""; };
+  reader.readAsText(file);
+});
+// 初始化：恢复主题与上次配置，再渲染一次。
+(function init(){
+  try {
+    var theme = localStorage.getItem(LS_THEME);
+    if(theme) document.documentElement.setAttribute("data-theme", theme);
+    var saved = localStorage.getItem(LS_STATE);
+    if(saved) applyState(JSON.parse(saved));
+  } catch(e) { /* 恢复失败时使用默认配置，不阻断使用 */ }
+  refreshTemplateList(); syncEditFields(); render();
+})();
 </script>
 </body>
 </html>

@@ -1,272 +1,379 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" data-theme="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClipPrompt | 本地视频提示词工作台</title>
+<meta name="description" content="本地规则视频提示词工作台：中文视频需求转英文视频 Prompt 与多镜头脚本。不调用任何 AI 模型。">
 <meta name="google-site-verification" content="fWZOyCIfCth5cZqTbJjaUXBtl6xDfTnVt5WJs4gEsv8">
 <meta name="google-site-verification" content="aDz0jgqdQV47QH0HWDAhzbFqA-Ke8r-rBr8Ea0gWWE8">
-<title>ClipPrompt — Turn a Video into the Prompt That Could Have Made It</title>
-<meta name="description" content="Free ClipPrompt reverse prompt tool (preview): see how a video breaks down into subject, shots, camera and sound, and how that becomes a copyable prompt in Wan 3.0 format. No sign-up, no video leaves your browser.">
-<link rel="canonical" href="https://clipprompt.kill-bill.de5.net/">
-<meta property="og:title" content="ClipPrompt">
-<meta property="og:description" content="Turn a video into the prompt that could have made it: shot-by-shot breakdown plus a copyable prompt in Wan 3.0 format. Preview build — live analysis coming later.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://clipprompt.kill-bill.de5.net/">
-<meta name="twitter:card" content="summary">
 <style>
-:root{--bg:#0d1017;--panel:#161b25;--panel2:#1f2634;--line:#2b3446;--txt:#e9edf5;--dim:#9aa7ba;--acc:#7dd87d;--acc2:#6cb8f0;--warn:#f0c36c;--radius:14px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
-a{color:var(--acc2)}
-.wrap{max-width:980px;margin:0 auto;padding:0 18px}
-header{padding:44px 0 8px;text-align:center}
-header h1{font-size:2rem;line-height:1.2}
-header h1 span{color:var(--acc)}
-header p{color:var(--dim);max-width:680px;margin:12px auto 0}
-.badges{margin:16px 0 4px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.badge{border:1px solid var(--line);background:var(--panel);color:var(--dim);border-radius:999px;padding:3px 12px;font-size:.8rem}
-.badge.hot{border-color:#6b5a2a;color:var(--warn)}
-.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:26px 0}
-.tool h2{font-size:1.2rem;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:700px){.grid{grid-template-columns:1fr}}
-.field label{display:block;font-size:.83rem;color:var(--dim);margin-bottom:5px;font-weight:600;letter-spacing:.02em}
-.field input[type=text],.field select,.field textarea,.field input[type=file]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:10px 11px;font-size:.95rem;font-family:inherit}
-.field textarea{min-height:60px;resize:vertical}
-.field.full{grid-column:1/-1}
-.mini-btn{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.85rem}
-.mini-btn:hover{color:var(--txt);border-color:var(--acc2)}
-.outbox{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px}
-.outhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.outhead h3{font-size:1rem}
-.output{width:100%;background:#090c10;border:1px solid var(--line);border-radius:10px;color:#d9f2d9;padding:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;min-height:110px;white-space:pre-wrap;word-break:break-word;margin-top:12px}
-.copyrow{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
-.copyBtn{background:var(--acc);color:#0d1a0d;border:none;border-radius:10px;padding:11px 22px;font-size:.95rem;font-weight:700;cursor:pointer}
-.copyBtn:hover{filter:brightness(1.08)}
-.copyBtn.alt{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
-.chars{color:var(--dim);font-size:.83rem}
-.notice{background:#2a2110;border:1px solid #6b5a2a;border-radius:10px;padding:12px 14px;color:#f0dcb0;font-size:.9rem;margin-top:14px}
-.notice b{color:var(--warn)}
-.tip{background:#12241a;border:1px solid #245236;border-radius:10px;padding:11px 14px;color:#c4ecd2;font-size:.88rem;margin-top:14px}
-section.content{margin:38px 0}
-section.content h2{font-size:1.35rem;margin-bottom:12px}
-section.content h2 span{color:var(--acc)}
-section.content p,section.content li{color:#c7d0de}
-section.content ul,section.content ol{padding-left:22px;margin:8px 0}
-section.content li{margin-bottom:6px}
-table.shots{width:100%;border-collapse:collapse;margin:14px 0;font-size:.9rem}
-table.shots th,table.shots td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
-table.shots th{background:var(--panel2);color:var(--dim);font-size:.82rem;letter-spacing:.02em}
-table.shots td{color:#c7d0de}
-table.shots td.t{font-family:ui-monospace,Menlo,monospace;color:var(--acc2);white-space:nowrap}
-.example-tag{display:inline-block;background:var(--warn);color:#241a05;font-weight:700;font-size:.78rem;border-radius:6px;padding:2px 9px;letter-spacing:.02em;margin-bottom:10px}
-#videoPreview{width:100%;max-height:360px;background:#090c10;border:1px solid var(--line);border-radius:10px;margin-top:12px;display:none}
-footer{border-top:1px solid var(--line);padding:22px 0 44px;color:var(--dim);font-size:.85rem;text-align:center}
-footer a{color:var(--dim)}
+:root{--accent:#ea580c;--bg:#faf5f0;--panel:#ffffff;--text:#221a14;--muted:#6b5d52;--border:#e2d6ca;--input:#ffffff}
+[data-theme="dark"]{--bg:#171310;--panel:#241d18;--text:#f5efe9;--muted:#b3a79e;--border:#3d332c;--input:#2e2620}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+header{max-width:1100px;margin:0 auto;padding:24px 16px 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between}
+h1{margin:0;font-size:26px}h2{font-size:17px;margin:20px 0 8px}.sub{color:var(--muted);margin:4px 0}
+.notice{border:1px solid var(--accent);border-left:6px solid var(--accent);background:var(--panel);padding:10px 14px;border-radius:8px;max-width:1100px;margin:8px auto}
+main{max-width:1100px;margin:0 auto;padding:8px 16px 32px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
+label{display:block;font-weight:600;margin:12px 0 4px}input[type="text"],input[type="number"],select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;background:var(--input);color:var(--text);font-size:15px}
+textarea{min-height:64px;resize:vertical}fieldset{border:1px solid var(--border);border-radius:8px;margin:12px 0;padding:0 12px 12px}
+legend{font-weight:700;padding:0 6px}.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{padding:9px 14px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:14px;cursor:pointer}
+button.secondary{background:transparent;color:var(--accent)}button:active{transform:translateY(1px)}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;min-height:90px;font-size:14px}
+.warn{background:#fff3cd;color:#664d03;border:1px solid #ffecb5;border-radius:8px;padding:10px;margin-top:10px}
+.err{background:#fdecea;color:#842029;border:1px solid #f5c2c7;border-radius:8px;padding:10px;margin-top:10px}
+.ok{background:#e6f4ea;color:#14532d;border:1px solid #b7e0c0;border-radius:8px;padding:10px;margin-top:10px}
+.shot{border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px}
+.shot h3{margin:0 0 4px;font-size:15px}.shotgrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px}
+footer{max-width:1100px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:14px}
+footer a{color:var(--accent)}@media(max-width:760px){main{grid-template-columns:1fr}h1{font-size:22px}.shotgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="wrap">
-
 <header>
-<h1>ClipPrompt <span>Reverse Prompt</span> Builder</h1>
-<p>Turn a video into the prompt that could have made it. The tool watches a clip, breaks it into subject, shots, camera and sound, then composes a copyable Wan 3.0-style prompt.</p>
-<div class="badges">
-<span class="badge hot">Preview build — live analysis not connected yet</span>
-<span class="badge">No sign-up</span>
-<span class="badge">No video leaves your browser</span>
-<span class="badge">Wan 3.0 prompt format</span>
-</div>
+<div><h1>ClipPrompt</h1><p class="sub">中文视频需求转英文视频 Prompt。按镜头写，按时间轴排，讲清楚运动、时长与连续性。</p></div>
+<button id="themeBtn" type="button">切换深色 / 浅色</button>
 </header>
-
-<div class="tool">
-<h2>Reverse a video</h2>
-<div class="grid">
-<div class="field full">
-<label for="videoFile">Video file (stays in your browser — nothing is uploaded)</label>
-<input type="file" id="videoFile" accept="video/*">
-<video id="videoPreview" controls playsinline></video>
-<div class="chars" id="fileMeta" style="margin-top:8px"></div>
-</div>
-<div class="field full">
-<label for="videoUrl">…or paste a video link (no fetching happens in this preview)</label>
-<input type="text" id="videoUrl" placeholder="https://…mp4 / YouTube / TikTok link">
-</div>
-<div class="field">
-<label for="hintSubject">Subject hint (optional)</label>
-<input type="text" id="hintSubject" placeholder="e.g. a street noodle vendor">
-</div>
-<div class="field">
-<label for="hintStyle">Style hint (optional)</label>
-<select id="hintStyle">
-<option value="">Auto (detect from the video)</option>
-<option>Cinematic</option>
-<option>Documentary</option>
-<option>Commercial / advertising</option>
-<option>Anime / stylised</option>
-<option>Realistic handheld</option>
+<div class="notice"><strong>明示：</strong>本站是本地规则 / 模板生成器，<strong>不调用任何 AI 模型</strong>，不需要 API Key、不登录、不注册、不付费、不上传数据。本站不生成视频，只生成可粘贴到视频工具里的文字提示词。</div>
+<main>
+<section class="panel" aria-label="编辑区">
+<h2>1. 全局参数</h2>
+<label for="videoStyle">视频风格</label>
+<select id="videoStyle">
+<option value="cinematic style">电影感</option><option value="documentary style">纪录片风格</option>
+<option value="anime style">动漫风格</option><option value="advertising style">广告风格</option>
+<option value="vlog style">生活记录风格</option>
 </select>
+<label for="fps">帧率（fps，数字）</label><input id="fps" type="number" min="12" max="60" value="24">
+<label for="aspect">画面比例</label>
+<select id="aspect"><option value="16:9 widescreen">16:9 横屏</option><option value="9:16 vertical">9:16 竖屏</option><option value="1:1 square">1:1 方形</option><option value="21:9 ultrawide">21:9 超宽屏</option></select>
+<label for="rhythm">节奏</label>
+<select id="rhythm"><option value="slow, calm pacing">缓慢平静</option><option value="steady pacing">平稳</option><option value="fast, energetic pacing">快速有力</option></select>
+<label for="environment">环境动态（中文，例如：雨落、风吹树叶、街道车流）</label>
+<input id="environment" type="text" placeholder="例如：风吹树叶">
+<label for="firstFrame">首帧描述（中文）</label><input id="firstFrame" type="text" placeholder="例如：女孩站在海边，面向大海">
+<label for="lastFrame">尾帧描述（中文）</label><input id="lastFrame" type="text" placeholder="例如：女孩回头微笑，画面渐暗">
+<fieldset><legend>镜头间连续性约束</legend>
+<label><input id="keepCharacter" type="checkbox" checked> 同一人物、同一外貌</label>
+<label><input id="keepClothing" type="checkbox" checked> 同一服装</label>
+<label><input id="keepScene" type="checkbox" checked> 同一场景与光线</label>
+<label><input id="keepCamera" type="checkbox"> 运镜风格保持一致</label>
+</fieldset>
+
+<h2>2. 时间轴与分镜（每个镜头单独编辑）</h2>
+<p class="sub">镜头按顺序播放，总时长在输出里自动合计。拖动顺序暂不支持，请按播放顺序从上往下填写，删改后序号自动重排。</p>
+<div id="shotsBox"></div>
+<div class="row">
+<button id="addShotBtn" type="button">添加一个镜头</button>
+<button id="clearShotsBtn" type="button" class="secondary">清空所有镜头</button>
+<button id="randomBtn" type="button" class="secondary">随机灵感</button>
+<button id="resetBtn" type="button" class="secondary">重置默认</button>
 </div>
-<div class="field full">
-<label for="hintLang">Output language</label>
-<select id="hintLang">
-<option>English</option>
-<option>Chinese</option>
+
+<h2>3. 输出方式</h2>
+<label><input type="radio" name="outputMode" value="single" checked> 单镜头 Prompt（只用第 1 个镜头）</label>
+<label><input type="radio" name="outputMode" value="script"> 多镜头完整脚本（全部镜头按时间轴排列）</label>
+<label for="formatPreset">输出格式预设（仅改变文字格式，不调用任何模型）</label>
+<select id="formatPreset">
+<option value="narrative">通用叙述句</option><option value="tags">关键词标签组合</option><option value="storyboard">分镜脚本格式</option>
 </select>
+
+<h2>4. 我的模板（只存本机浏览器）</h2>
+<label for="templateName">模板名称</label><input id="templateName" type="text" placeholder="例如：海边短片常用">
+<div class="row">
+<button id="saveTemplateBtn" type="button">保存当前为模板</button>
+<button id="exportBtn" type="button" class="secondary">导出 JSON</button>
+<button id="importBtn" type="button" class="secondary">导入 JSON</button>
+<input id="importFile" type="file" accept=".json,application/json" hidden>
 </div>
+<label for="templateSelect">已保存的模板</label>
+<select id="templateSelect"><option value="">暂无已保存模板</option></select>
+<div class="row">
+<button id="loadTemplateBtn" type="button" class="secondary">载入选中模板</button>
+<button id="deleteTemplateBtn" type="button" class="secondary">删除选中模板</button>
 </div>
-<div class="copyrow">
-<button class="copyBtn" id="reverseBtn" type="button">Reverse this video</button>
-<button class="copyBtn alt" id="exampleBtn" type="button">See the worked example ↓</button>
-</div>
-<div class="notice" id="reverseNotice" style="display:none"><b>Preview build:</b> live reverse analysis is not connected yet — no model call happens, and your video is never sent anywhere. The worked example below shows exactly what the live tool will output, shot by shot. Live analysis arrives with the full version.</div>
-<div class="tip">How the live tool will work: it samples frames from your clip, reads subject, setting, motion, camera, style and sound, then writes one overall description, numbered shots with time ranges, and a continuity line — the official Wan 3.0 prompting pattern (Subject + Setting + Motion + Camera + Style + Sound).</div>
-</div>
-
-<section class="content" id="example">
-<h2><span>Worked example</span> — one clip, fully reversed</h2>
-<p><span class="example-tag">EXAMPLE — DESCRIBED CLIP, NOT A VIDEO FILE</span></p>
-<p><b>Sample clip: “Night Market Noodles”</b> · 12 seconds · 16:9 · 720p · night street-food stall. This preview embeds no video file; the shot list below is the exact breakdown a reverse pass produces, written out so you can see every decision the tool makes. Read the table first, then the prompt — the prompt is built directly from the table, nothing extra is invented.</p>
-
-<table class="shots">
-<tr><th>Shot</th><th>What happens</th><th>Camera</th><th>Sound</th></tr>
-<tr><td class="t">1 · 0:00–0:03</td><td>Wide establishing shot of a bustling night-market alley. Neon signs glow red and yellow above a noodle stall. Steam rises from a large wok as the vendor in a dark apron tosses noodles.</td><td>Slow dolly-in</td><td>Sizzling oil, crowd murmur, distant traffic</td></tr>
-<tr><td class="t">2 · 0:03–0:07</td><td>Medium close-up of the vendor's hands pulling fresh noodles. Flour dust drifts through warm tungsten light. Rhythmic chopping on a wooden board behind him.</td><td>Steady hold, slight handheld sway</td><td>Sizzle and chopping dominate</td></tr>
-<tr><td class="t">3 · 0:07–0:10</td><td>Close-up of a steaming bowl handed across the counter. Chopsticks lift glossy noodles as steam curls toward the lens.</td><td>Low angle, shallow depth of field</td><td>A quick slurp, the vendor's friendly call</td></tr>
-<tr><td class="t">4 · 0:10–0:12</td><td>Cut to a smiling customer on a small plastic stool. Neon reflections shimmer on the wet pavement, the stall's warm glow behind him.</td><td>Slow pull-back</td><td>Laughter, night-market ambience</td></tr>
-</table>
-
-<div class="outbox">
-<div class="outhead"><h3>Derived prompt in Wan 3.0 format (copy it, use it, change it)</h3></div>
-<div class="output" id="promptOut">A warm, cinematic night-market scene: a street noodle vendor works his stall under neon signs as steam and hungry customers fill the frame.
-Shot 1 (0:00–0:03): Wide establishing shot of a bustling night-market alley at night, neon signs glowing red and yellow above a noodle stall, steam rising from a large wok as the vendor tosses noodles; camera slowly dollies in; sound of sizzling oil, crowd murmur and distant traffic.
-Shot 2 (0:03–0:07): Medium close-up of the vendor's hands pulling fresh noodles, flour dust drifting through warm tungsten light, rhythmic chopping on a wooden board behind him; camera holds steady with a slight handheld sway; sizzle and chopping sounds dominate.
-Shot 3 (0:07–0:10): Close-up of a steaming bowl handed across the counter, chopsticks lifting glossy noodles as steam curls toward the lens; low camera angle, shallow depth of field; a quick slurp and the vendor's friendly call.
-Shot 4 (0:10–0:12): Cut to a smiling customer at a small plastic stool, neon reflections shimmering on the wet pavement, the stall's warm glow behind him; camera slowly pulls back; laughter and night-market ambience.
-Continuity: same vendor in a dark apron, same red-and-yellow stall signage, same warm tungsten lighting and wet-pavement reflections throughout; no change of location or time of day.</div>
-<div class="copyrow">
-<button class="copyBtn" id="copyBtn" type="button">Copy prompt</button>
-<button class="copyBtn alt" id="dlBtn" type="button">Download .txt</button>
-<span class="chars" id="copyMsg"></span>
-</div>
-</div>
-
-<h2 style="margin-top:30px">Why the prompt is written this way</h2>
-<ul>
-<li><b>One-line description first, then numbered shots.</b> The opener fixes subject, place and mood in one breath; the shots carry the sequence. That is the official Wan 3.0 pattern.</li>
-<li><b>Time ranges are consecutive and never overlap</b> (0:00–0:03, 0:03–0:07, 0:07–0:10, 0:10–0:12), and each shot carries <b>one clear action</b>. Treat a range as a time budget, not an exact edit point — never ask for three actions in one second.</li>
-<li><b>Camera and sound are written into every shot</b>, not left as decoration. “Slow dolly-in” and “sizzling oil” are part of the prompt, because Wan 3.0 generates native audio (dialogue, music, effects, ambience) by default.</li>
-<li><b>The continuity line comes last.</b> Identity, clothing, signage, lighting and layout are repeated here so the vendor, the stall and the wet pavement stay the same across cuts.</li>
-<li><b>“One continuous take” is deliberately NOT used.</b> That exact phrase forces no cuts; this clip has four cuts, so asking for one continuous take would fight the footage. Use it only for genuinely uncut clips.</li>
-</ul>
 </section>
-
-<section class="content">
-<h2>How reverse-prompting <span>works</span></h2>
-<ol>
-<li><b>Watch.</b> The live tool samples frames across the clip and reads the audio track, so motion and sound are observed, not guessed.</li>
-<li><b>Break down.</b> Each shot gets subject, setting, motion, camera, style and sound — the same six slots the prompt formula uses.</li>
-<li><b>Compose.</b> The slots are written up as one description, numbered shots with time ranges, and a continuity line, ready to paste into Wan 3.0.</li>
-</ol>
-<h2 style="margin-top:26px">What it <span>cannot</span> do — the honesty boundary</h2>
-<ul>
-<li><b>It recovers an equivalent prompt, not the exact original.</b> Videos carry no prompt metadata, and generation is random — nobody can read back the precise words someone typed. What you get is a high-fidelity prompt that should reproduce a very similar clip.</li>
-<li><b>Timestamps are intent signals, not frame-accurate edits.</b> How strictly Wan 3.0 honours in-prompt timestamps has not been independently verified; treat ranges as “roughly this part of the clip”, not as cut points.</li>
-<li><b>It cannot invent what is not in the footage.</b> If a detail never appears on screen or on the soundtrack, a good reverse prompt leaves it out instead of hallucinating it.</li>
-</ul>
+<section class="panel" aria-label="输出区">
+<h2>实时英文预览</h2>
+<h3>视频 Prompt / 脚本</h3><pre id="mainOut"></pre>
+<button id="copyMainBtn" type="button">复制上面内容</button>
+<div id="warnBox" class="warn" hidden></div>
+<div id="errorBox" class="err" hidden></div>
+<div id="statusBox" class="ok" hidden></div>
+<p class="sub">本地示例、非模型生成：两个镜头、每镜头 3 秒、推镜＋环绕，输出会写清 Shot 1 / Shot 2、各自时长与运镜，供你对照格式使用。本站不生成视频。</p>
 </section>
-
-<section class="content">
-<h2>What the <span>live version</span> will add</h2>
-<ul>
-<li>Real analysis of your video by Qwen3-VL (the planned reverse engine), returning the same shot table and prompt for your own clip.</li>
-<li>The token count of every call, shown next to the result, so the cost of each reverse is visible before you run the next one.</li>
-<li>An optional verification end: feed the reversed prompt back into Wan 3.0 generation and compare how close the new clip looks to the original.</li>
-<li><b>First reverse free:</b> your first reverse completes before any paywall appears — payment only comes after your first operation.</li>
-</ul>
-<p>None of that needs an account, a login or a payment in this preview — and the preview makes no network calls at all.</p>
-</section>
-
-<section class="content">
-<h2>Cost <span>notes</span> (for the live version — the preview costs nothing)</h2>
-<ul>
-<li><b>Reverse engine (Qwen3-VL, qwen3-vl-plus, via DashScope):</b> International / Singapore — $0.20 input / $1.60 output per 1M tokens for requests up to 32K input tokens (tiered higher for larger requests); Beijing — $0.143 / $1.434. Singapore offers a 1M-token free quota for 90 days. Per-video cost depends on how many frames are sampled and cannot be quoted until a real call is measured.</li>
-<li><b>Verification end (Wan 3.0 generation):</b> about $0.05 / $0.10 / $0.20 per second at 480p / 720p / 1080p.</li>
-<li>Prices are from the official platform pages — check your platform before budgeting. This preview build calls no API and spends nothing.</li>
-</ul>
-</section>
-
-<section class="content">
-<h2><span>Pricing</span></h2>
-<ul>
-<li><b>First reverse free:</b> your first reverse completes before any paywall appears.</li>
-<li><b>Reverse Credits — 10 reverses — $5 one-time (USD, taxes included).</b> <a href="https://www.creem.io/product/prod_7NHHKarzCVVigJi8nDLGdN">Buy 10 reverses</a>. Credits are tied to the email you pay with; the live tool unlocks them when you enter that email. Payments are securely handled by Creem — we never see your card details.</li>
-</ul>
-<p>Checkout opens once the store is approved for live payments; the preview build takes no payment yet.</p>
-</section>
-
-<section class="content">
-<h2>FAQ</h2>
-<ul>
-<li><b>Does this tool generate videos?</b> No. It writes prompts. You run the prompt yourself in Wan 3.0 (or any video model) — the preview does not generate anything.</li>
-<li><b>Why is there no video upload?</b> This is a preview build: the reverse engine is not connected yet, so there is nothing to upload to. Picking a file only previews it locally in your browser.</li>
-<li><b>Will the reversed prompt reproduce my exact video?</b> No — it reproduces a very similar one. The original wording is not recoverable from the video itself.</li>
-<li><b>What clip lengths work?</b> Wan 3.0 clips run 2–30 seconds at 30fps (480p / 720p / 1080p; 16:9, 9:16, 1:1, 4:3, 3:4). The live tool will cap length and frame count per call to keep costs visible.</li>
-<li><b>Is Wan 3.0 open-weights?</b> No. Wan 2.2 is the last Apache flagship; Wan 3.0 weights are not open — do not pitch this as an open-model tool.</li>
-</ul>
-</section>
-
+</main>
 <footer>
-<p>ClipPrompt — video reverse prompt builder. Preview build: no sign-up, no video leaves your browser. Live reverse analysis arrives with the full version.</p>
-<p>Operated by ShuoHang Wu (吴铄航). Contact: <a href="mailto:peter.12312367@gmail.com">peter.12312367@gmail.com</a></p>
-<p><a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a> · <a href="/acceptable-use">Acceptable Use Policy</a> · <a href="/about">About</a></p>
+<p>姊妹站：
+<a href="https://ideogram45.qqbridge.workers.dev/">Ideogram 4.5 Prompt Builder</a> ·
+<a href="https://flux3klein.qqbridge.workers.dev/">FLUX 3 Klein Prompt Builder</a> ·
+<a href="https://clipprompt.kill-bill.de5.net/">ClipPrompt</a>
+（以上仅为页脚导航文字链接，不是运行时依赖。）</p>
+<p>本站不调用 AI 模型、不收集、不上传用户输入；模板与配置只保存在本机浏览器 localStorage 中。免费使用，无账号、无付费。</p>
+<p><a href="privacy.html">隐私说明</a> · <a href="terms.html">使用条款</a> · <a href="acceptable-use.html">合理使用</a> · <a href="about.html">关于本站</a></p>
 </footer>
-
-</div>
 <script>
-var fileInput = document.getElementById('videoFile');
-var preview = document.getElementById('videoPreview');
-var meta = document.getElementById('fileMeta');
-fileInput.addEventListener('change', function(){
-  var f = fileInput.files && fileInput.files[0];
-  if(!f){ preview.style.display = 'none'; meta.textContent = ''; return; }
-  preview.src = URL.createObjectURL(f);
-  preview.style.display = 'block';
-  preview.onloadedmetadata = function(){
-    var d = preview.duration;
-    meta.textContent = 'Selected: ' + f.name + ' (' + (f.size/1048576).toFixed(1) + ' MB' + (isFinite(d) ? ', ' + d.toFixed(1) + 's' : '') + ') — preview only, kept in your browser.';
-  };
-});
-document.getElementById('reverseBtn').addEventListener('click', function(){
-  var n = document.getElementById('reverseNotice');
-  n.style.display = 'block';
-  n.scrollIntoView({behavior:'smooth', block:'center'});
-});
-document.getElementById('exampleBtn').addEventListener('click', function(){
-  document.getElementById('example').scrollIntoView({behavior:'smooth'});
-});
-document.getElementById('copyBtn').addEventListener('click', function(){
-  var t = document.getElementById('promptOut').textContent;
-  var msg = document.getElementById('copyMsg');
-  function done(){ msg.textContent = 'Copied!'; setTimeout(function(){ msg.textContent=''; }, 2000); }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(t).then(done, function(){ fallback(); });
-  } else { fallback(); }
-  function fallback(){
-    var ta = document.createElement('textarea');
-    ta.value = t; document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); done(); } catch(e){ msg.textContent = 'Copy failed — select the text manually.'; }
-    document.body.removeChild(ta);
+"use strict";
+// 本地词典：常见中文词映射为英文。查不到的中文原样保留并提示，绝不伪装翻译。
+var DICT = {
+"一只橘猫":"an orange cat","一位女孩":"a girl","一位男孩":"a boy","一杯咖啡":"a cup of coffee",
+"一只":"a","一个":"a","一位":"a","一座":"a","一辆":"a","一杯":"a","在":"in",
+"女孩":"girl","男孩":"boy","女人":"woman","男人":"man","猫":"cat","橘猫":"orange cat","狗":"dog",
+"奔跑":"running","跑":"running","走":"walking","回头":"turning back","微笑":"smiling","坐":"sitting",
+"海边":"seaside","街道":"street","城市":"city","客厅":"living room","书房":"study","山":"mountain",
+"风吹树叶":"wind blowing leaves","雨落":"rain falling","街道车流":"street traffic",
+"面向大海":"facing the sea","站在海边":"standing on the seaside","回头微笑":"turning back and smiling",
+"画面渐暗":"fading to black","红色":"red","蓝色":"blue","绿色":"green"
+};
+var MOVEMENT = {"push":"push-in","pull":"pull-out","pan":"pan","dolly":"dolly move","track":"tracking shot",
+"orbit":"orbiting shot","rise":"rising shot","static":"static shot"};
+var MOVEMENT_CN = {"push":"推镜","pull":"拉镜","pan":"摇镜","dolly":"移镜","track":"跟拍","orbit":"环绕","rise":"升降","static":"固定机位"};
+var LS_STATE = "clipprompt-state-v2", LS_THEME = "clipprompt-theme-v2", LS_TEMPLATES = "clipprompt-templates-v2";
+var shots = [
+  {content:"女孩站在海边", movement:"push", duration:3},
+  {content:"女孩奔跑", movement:"track", duration:4}
+];
+function $(id){ return document.getElementById(id); }
+function show(el, msg){ el.textContent = msg; el.hidden = false; }
+function hide(el){ el.hidden = true; el.textContent = ""; }
+// 翻译自由输入中文：按词典从长词到短词替换，剩余中文收集为缺失词。
+function translateFree(text){
+  var out = (text || "").trim(), missing = [];
+  if(!out) return {en:"", missing:missing};
+  var keys = Object.keys(DICT).sort(function(a,b){ return b.length - a.length; });
+  keys.forEach(function(k){ if(out.indexOf(k) !== -1){ out = out.split(k).join(" " + DICT[k] + " "); } });
+  out = out.replace(/\s+/g, " ").trim();
+  var m = out.match(/[\u4e00-\u9fff]+/g);
+  if(m){ m.forEach(function(w){ if(missing.indexOf(w) === -1) missing.push(w); }); }
+  return {en:out, missing:missing};
+}
+// 收集全局状态（镜头列表单独保存）。
+function collectState(){
+  var mode = document.querySelector('input[name="outputMode"]:checked').value;
+  return {videoStyle:$("videoStyle").value, fps:$("fps").value, aspect:$("aspect").value,
+    rhythm:$("rhythm").value, environment:$("environment").value, firstFrame:$("firstFrame").value,
+    lastFrame:$("lastFrame").value, keepCharacter:$("keepCharacter").checked, keepClothing:$("keepClothing").checked,
+    keepScene:$("keepScene").checked, keepCamera:$("keepCamera").checked,
+    outputMode:mode, formatPreset:$("formatPreset").value, shots:shots};
+}
+function applyState(s){
+  if(!s) return;
+  ["videoStyle","fps","aspect","rhythm","environment","firstFrame","lastFrame","formatPreset"].forEach(function(id){
+    if(s[id] !== undefined) $(id).value = s[id]; });
+  ["keepCharacter","keepClothing","keepScene","keepCamera"].forEach(function(id){
+    if(s[id] !== undefined) $(id).checked = !!s[id]; });
+  document.querySelectorAll('input[name="outputMode"]').forEach(function(r){ r.checked = (r.value === s.outputMode); });
+  shots = Array.isArray(s.shots) && s.shots.length ? s.shots : [{content:"", movement:"push", duration:3}];
+  renderShots(); render();
+}
+// 渲染镜头编辑卡片，每张卡片都有内容、运镜、时长与删除按钮。
+function renderShots(){
+  var box = $("shotsBox"); box.innerHTML = "";
+  shots.forEach(function(shot, i){
+    var div = document.createElement("div"); div.className = "shot";
+    var h = document.createElement("h3"); h.textContent = "镜头 " + (i + 1); div.appendChild(h);
+    var grid = document.createElement("div"); grid.className = "shotgrid";
+    var content = document.createElement("input"); content.type = "text"; content.value = shot.content || "";
+    content.placeholder = "画面内容（中文），例如：女孩在海边奔跑"; content.setAttribute("aria-label", "镜头" + (i + 1) + "画面内容");
+    content.addEventListener("input", function(){ shot.content = content.value; render(); });
+    var move = document.createElement("select"); move.setAttribute("aria-label", "镜头" + (i + 1) + "运镜");
+    Object.keys(MOVEMENT_CN).forEach(function(k){
+      var o = document.createElement("option"); o.value = k; o.textContent = MOVEMENT_CN[k]; if(k === shot.movement) o.selected = true; move.appendChild(o);
+    });
+    move.addEventListener("change", function(){ shot.movement = move.value; render(); });
+    var dur = document.createElement("input"); dur.type = "number"; dur.min = "1"; dur.max = "30"; dur.value = shot.duration || 3;
+    dur.setAttribute("aria-label", "镜头" + (i + 1) + "时长秒数");
+    dur.addEventListener("input", function(){ shot.duration = Math.max(1, Math.min(30, Number(dur.value) || 3)); render(); });
+    grid.appendChild(content); grid.appendChild(move); grid.appendChild(dur); div.appendChild(grid);
+    var del = document.createElement("button"); del.type = "button"; del.className = "secondary"; del.textContent = "删除这个镜头";
+    del.addEventListener("click", function(){ shots.splice(i, 1); if(!shots.length) shots.push({content:"", movement:"push", duration:3}); renderShots(); render(); });
+    div.appendChild(del); box.appendChild(div);
+  });
+}
+// 连续性约束：把勾选的保持项拼成英文句子。
+function continuityLine(){
+  var keeps = [];
+  if($("keepCharacter").checked) keeps.push("same character and appearance");
+  if($("keepClothing").checked) keeps.push("same clothing");
+  if($("keepScene").checked) keeps.push("same scene and lighting");
+  if($("keepCamera").checked) keeps.push("consistent camera movement style");
+  return keeps.length ? "Continuity: " + keeps.join(", ") + "." : "";
+}
+// 生成单镜头或多镜头脚本，并处理未收录中文提示。
+function render(){
+  hide($("errorBox")); hide($("statusBox"));
+  var s = collectState();
+  try { localStorage.setItem(LS_STATE, JSON.stringify(s)); } catch(e) {}
+  var missing = [];
+  function tr(text){ var r = translateFree(text); r.missing.forEach(function(w){ if(missing.indexOf(w) === -1) missing.push(w); }); return r.en; }
+  var env = tr(s.environment), first = tr(s.firstFrame), last = tr(s.lastFrame);
+  var fps = Math.max(12, Math.min(60, Number(s.fps) || 24));
+  var total = shots.reduce(function(sum, sh){ return sum + (Number(sh.duration) || 3); }, 0);
+  var header = s.videoStyle + ", " + s.aspect + ", " + fps + " fps, " + s.rhythm;
+  if(env) header += ", environment motion: " + env;
+  var cons = continuityLine();
+  var out;
+  if(s.outputMode === "single"){
+    var sh = shots[0] || {content:"", movement:"push", duration:3};
+    var content = tr(sh.content);
+    if(s.formatPreset === "tags"){
+      out = [content, MOVEMENT[sh.movement], s.videoStyle, s.aspect, fps + " fps", sh.duration + "s"].filter(Boolean).join(", ") + ".";
+    } else {
+      out = "Video prompt: " + (content || "a subject") + ", camera: " + MOVEMENT[sh.movement] +
+        ", duration " + (sh.duration || 3) + " seconds, " + header + ".";
+    }
+    if(first) out += " First frame: " + first + ".";
+    if(last) out += " Last frame: " + last + ".";
+    if(cons) out += " " + cons;
+  } else {
+    var lines = [];
+    if(s.formatPreset === "storyboard"){
+      lines.push("Storyboard script | Total duration: " + total + " seconds | " + header);
+      shots.forEach(function(sh, i){
+        lines.push("Shot " + (i + 1) + " (" + (sh.duration || 3) + "s): " + tr(sh.content) + ", camera: " + MOVEMENT[sh.movement] + ".");
+      });
+    } else if(s.formatPreset === "tags"){
+      lines.push("Tags: " + s.videoStyle + ", " + s.aspect + ", " + fps + " fps, " + s.rhythm);
+      shots.forEach(function(sh, i){
+        lines.push("Shot " + (i + 1) + ": " + tr(sh.content) + ", " + MOVEMENT[sh.movement] + ", " + (sh.duration || 3) + "s.");
+      });
+    } else {
+      lines.push("Multi-shot video script, total duration " + total + " seconds, " + header + ".");
+      shots.forEach(function(sh, i){
+        lines.push("Shot " + (i + 1) + " (" + (sh.duration || 3) + " seconds): " + tr(sh.content) + " with " + MOVEMENT[sh.movement] + ".");
+      });
+    }
+    if(first) lines.push("First frame: " + first + ".");
+    if(last) lines.push("Last frame: " + last + ".");
+    if(cons) lines.push(cons);
+    out = lines.join("\n");
   }
+  $("mainOut").textContent = out;
+  if(missing.length){
+    show($("warnBox"), "未在本地词库中找到，已原样保留，请自行替换为英文：" + missing.join("、") + "。本站不做 AI 翻译。");
+  } else { hide($("warnBox")); }
+}
+// 一键复制：优先剪贴板接口，失败时用临时文本框备用。
+function copyText(text, okMsg){
+  function done(ok){ show(ok ? $("statusBox") : $("errorBox"), ok ? okMsg : "复制失败：请手动选中上方文本复制。"); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ fallbackCopy(text, done); });
+  } else { fallbackCopy(text, done); }
+}
+function fallbackCopy(text, done){
+  var ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch(e) { ok = false; }
+  document.body.removeChild(ta); done(ok);
+}
+function refreshTemplateList(){
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]"); } catch(e) { list = []; }
+  var sel = $("templateSelect"); sel.innerHTML = "";
+  if(!list.length){ var o = document.createElement("option"); o.value = ""; o.textContent = "暂无已保存模板"; sel.appendChild(o); return; }
+  list.forEach(function(t, i){
+    var o = document.createElement("option"); o.value = String(i); o.textContent = t.name; sel.appendChild(o);
+  });
+}
+document.querySelectorAll("input, select").forEach(function(el){
+  el.addEventListener("input", render); el.addEventListener("change", render);
 });
-document.getElementById('dlBtn').addEventListener('click', function(){
-  var t = document.getElementById('promptOut').textContent;
-  var blob = new Blob([t], {type:'text/plain;charset=utf-8'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'clipprompt-night-market-noodles-prompt.txt';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+$("themeBtn").addEventListener("click", function(){
+  var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem(LS_THEME, next); } catch(e) {}
 });
+$("addShotBtn").addEventListener("click", function(){
+  shots.push({content:"", movement:"push", duration:3}); renderShots(); render();
+  show($("statusBox"), "已添加镜头 " + shots.length + "。");
+});
+$("clearShotsBtn").addEventListener("click", function(){
+  shots = [{content:"", movement:"push", duration:3}]; renderShots(); render(); show($("statusBox"), "已清空，保留一个空镜头。");
+});
+$("randomBtn").addEventListener("click", function(){
+  var contents = ["女孩在海边奔跑", "男孩在城市街道行走", "橘猫坐在窗边"];
+  var moves = ["push", "track", "orbit"];
+  shots = [
+    {content:contents[Math.floor(Math.random() * contents.length)], movement:moves[Math.floor(Math.random() * moves.length)], duration:3},
+    {content:contents[Math.floor(Math.random() * contents.length)], movement:moves[Math.floor(Math.random() * moves.length)], duration:4}
+  ];
+  $("environment").value = "风吹树叶"; renderShots(); render();
+});
+$("resetBtn").addEventListener("click", function(){
+  try { localStorage.removeItem(LS_STATE); } catch(e) {}
+  document.querySelectorAll("input[type=text]").forEach(function(el){ el.value = ""; });
+  $("fps").value = "24";
+  document.querySelectorAll("select").forEach(function(el){ el.selectedIndex = 0; });
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(el){ el.checked = false; });
+  $("keepCharacter").checked = true; $("keepClothing").checked = true; $("keepScene").checked = true;
+  document.querySelector('input[name="outputMode"][value="single"]').checked = true;
+  shots = [{content:"女孩站在海边", movement:"push", duration:3}, {content:"女孩奔跑", movement:"track", duration:4}];
+  renderShots(); render(); show($("statusBox"), "已重置为默认配置。");
+});
+$("copyMainBtn").addEventListener("click", function(){ copyText($("mainOut").textContent, "已复制。"); });
+$("saveTemplateBtn").addEventListener("click", function(){
+  var name = $("templateName").value.trim();
+  if(!name){ show($("errorBox"), "保存失败：请先填写模板名称。"); return; }
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]"); } catch(e) { list = []; }
+  list.push({name:name, state:collectState(), savedAt:new Date().toISOString()});
+  try { localStorage.setItem(LS_TEMPLATES, JSON.stringify(list)); } catch(e) { show($("errorBox"), "保存失败：浏览器存储不可用。"); return; }
+  refreshTemplateList(); show($("statusBox"), "模板已保存到本机浏览器：" + name + "。");
+});
+$("loadTemplateBtn").addEventListener("click", function(){
+  var idx = $("templateSelect").value;
+  if(idx === "" || idx === null){ show($("errorBox"), "载入失败：请先选择一个已保存模板。"); return; }
+  var list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]");
+  if(!list[idx]){ show($("errorBox"), "载入失败：该模板不存在，可能已被删除。"); return; }
+  applyState(list[idx].state); show($("statusBox"), "已载入模板：" + list[idx].name + "。");
+});
+$("deleteTemplateBtn").addEventListener("click", function(){
+  var idx = $("templateSelect").value;
+  if(idx === "" || idx === null){ show($("errorBox"), "删除失败：请先选择一个已保存模板。"); return; }
+  var list = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]");
+  list.splice(Number(idx), 1);
+  localStorage.setItem(LS_TEMPLATES, JSON.stringify(list));
+  refreshTemplateList(); show($("statusBox"), "已删除选中模板。");
+});
+$("exportBtn").addEventListener("click", function(){
+  var data = {site:"clipprompt", version:2, state:collectState(), templates:[], exportedAt:new Date().toISOString()};
+  try { data.templates = JSON.parse(localStorage.getItem(LS_TEMPLATES) || "[]"); } catch(e) {}
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "clipprompt-templates.json"; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  show($("statusBox"), "JSON 已导出。");
+});
+$("importBtn").addEventListener("click", function(){ $("importFile").click(); });
+$("importFile").addEventListener("change", function(){
+  var file = $("importFile").files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try {
+      var data = JSON.parse(reader.result);
+      if(!data || typeof data !== "object" || !data.state) throw new Error("文件里没有可用的 state 配置");
+      applyState(data.state);
+      if(Array.isArray(data.templates)) localStorage.setItem(LS_TEMPLATES, JSON.stringify(data.templates));
+      refreshTemplateList(); show($("statusBox"), "JSON 导入成功，配置已恢复。");
+    } catch(e) { show($("errorBox"), "导入失败：文件不是有效的模板 JSON（" + e.message + "）。"); }
+    $("importFile").value = "";
+  };
+  reader.onerror = function(){ show($("errorBox"), "导入失败：无法读取该文件。"); $("importFile").value = ""; };
+  reader.readAsText(file);
+});
+(function init(){
+  try {
+    var theme = localStorage.getItem(LS_THEME);
+    if(theme) document.documentElement.setAttribute("data-theme", theme);
+    var saved = localStorage.getItem(LS_STATE);
+    if(saved) applyState(JSON.parse(saved));
+  } catch(e) {}
+  refreshTemplateList(); renderShots(); render();
+})();
 </script>
 </body>
 </html>
